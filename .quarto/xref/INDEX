@@ -1,0 +1,20 @@
+{
+  "05-cases.qmd": {
+    "05-cases.html": "b29a6dfc"
+  },
+  "index.qmd": {
+    "index.html": "c0079a53"
+  },
+  "04-r.qmd": {
+    "04-r.html": "9b5076e2"
+  },
+  "01-setup.qmd": {
+    "01-setup.html": "47d057e3"
+  },
+  "02-mcp.qmd": {
+    "02-mcp.html": "98f91cb3"
+  },
+  "03-python.qmd": {
+    "03-python.html": "b47e7ac9"
+  }
+}

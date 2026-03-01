@@ -1,0 +1,61 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Korean Legislative Data for Researchers"
+  description: "A practical guide to accessing Korean National Assembly data using the Open Assembly API and MCP"
+  favicon: images/favicon.ico
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: 01-setup.qmd
+        text: "1. Setup"
+      - href: 02-mcp.qmd
+        text: "2. MCP + Claude"
+      - href: 03-python.qmd
+        text: "3. Python"
+      - href: 04-r.qmd
+        text: "4. R"
+      - href: 05-cases.qmd
+        text: "5. Research Cases"
+    right:
+      - icon: github
+        href: https://github.com/kyusik-yang/open-assembly-mcp
+      - icon: box-arrow-up-right
+        href: https://national-assembly-kr.streamlit.app
+        text: "Live Demo"
+  sidebar:
+    style: docked
+    contents:
+      - index.qmd
+      - section: "Getting Started"
+        contents:
+          - 01-setup.qmd
+          - 02-mcp.qmd
+      - section: "Scripting the API"
+        contents:
+          - 03-python.qmd
+          - 04-r.qmd
+      - section: "Applied Research"
+        contents:
+          - 05-cases.qmd
+  page-footer:
+    left: "Built with [Quarto](https://quarto.org) · Data from [열린국회정보](https://open.assembly.go.kr)"
+    right: "Kyusik Yang · NYU Department of Politics"
+
+execute:
+  eval: false
+  echo: true
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    code-copy: true
+    code-overflow: wrap
+    highlight-style: github

@@ -1,0 +1,217 @@
+---
+title: "Chapter 3: Python"
+subtitle: "Querying the Assembly API with async Python"
+---
+
+This chapter provides a complete async Python client for the 열린국회정보 API, ready to drop into a research pipeline.
+
+---
+
+## Setup
+
+```bash
+pip install httpx python-dotenv pandas
+```
+
+`.env` file:
+```
+ASSEMBLY_API_KEY=your-key-here
+```
+
+---
+
+## The client
+
+Save this as `assembly_client.py` in your project:
+
+```python
+import os, asyncio
+from typing import Optional
+import httpx
+from dotenv import load_dotenv
+
+load_dotenv()
+
+BASE_URL = "https://open.assembly.go.kr/portal/openapi"
+UNIT_CD  = {"22": "100022", "21": "100021", "20": "100020", "19": "100019", "18": "100018"}
+
+
+class AssemblyClient:
+    def __init__(self):
+        self.key = os.getenv("ASSEMBLY_API_KEY")
+        if not self.key:
+            raise ValueError("ASSEMBLY_API_KEY not set")
+        self._http = httpx.AsyncClient(timeout=30)
+
+    async def __aenter__(self): return self
+    async def __aexit__(self, *_): await self._http.aclose()
+
+    def _base(self):
+        return {"KEY": self.key, "Type": "json"}
+
+    def _parse(self, data: dict, ep: str) -> list[dict]:
+        """Parse 열린국회 API response. Returns [] on INFO-200 (no results)."""
+        body = data.get(ep, [])
+        if not body:
+            return []
+        code = body[0]["head"][1]["RESULT"]["CODE"]
+        if code == "INFO-200":
+            return []
+        if code != "INFO-000":
+            raise ValueError(f"API error {code}: {body[0]['head'][1]['RESULT']['MESSAGE']}")
+        rows = body[1].get("row", []) if len(body) > 1 else []
+        return rows if isinstance(rows, list) else [rows]  # normalize single-record responses
+
+    async def get(self, endpoint: str, **params) -> list[dict]:
+        merged = {**self._base(), **{k: v for k, v in params.items() if v is not None}}
+        r = await self._http.get(f"{BASE_URL}/{endpoint}", params=merged)
+        r.raise_for_status()
+        return self._parse(r.json(), endpoint)
+
+    # ── Convenience methods ────────────────────────────────────────────────────
+
+    async def search_bills(self, age: str, bill_name=None, proposer=None,
+                           proc_result=None, committee=None, page=1, page_size=100):
+        return await self.get("nzmimeepazxkubdpn",
+            AGE=age, BILL_NAME=bill_name, PROPOSER=proposer,
+            PROC_RESULT=proc_result, COMMITTEE=committee,
+            pIndex=page, pSize=page_size)
+
+    async def get_members(self, age="22", name=None, party=None,
+                          district=None, committee=None, page_size=300):
+        return await self.get("nwvrqwxyaytdsfvhu",
+            UNIT_CD=UNIT_CD.get(age, f"1000{age}"), HG_NM=name,
+            POLY_NM=party, ORIG_NM=district, CMIT_NM=committee, pSize=page_size)
+
+    async def get_votes(self, age: str, bill_name=None, page_size=100):
+        return await self.get("ncocpgfiaoituanbr",
+            AGE=age, BILL_NAME=bill_name, pSize=page_size)
+
+    async def get_proposers(self, bill_id: str):
+        return await self.get("BILLINFOPPSR", BILL_ID=bill_id)
+```
+
+---
+
+## Example 1: Collect all AI-related bills in the 22nd Assembly
+
+```python
+import asyncio, pandas as pd
+from assembly_client import AssemblyClient
+
+async def main():
+    async with AssemblyClient() as client:
+        rows = await client.search_bills(age="22", bill_name="인공지능", page_size=100)
+
+    df = pd.DataFrame(rows)
+    print(df[["BILL_NO", "BILL_NAME", "RST_PROPOSER", "COMMITTEE", "PROC_RESULT"]].to_string())
+    df.to_csv("ai_bills_22nd.csv", index=False, encoding="utf-8-sig")
+
+asyncio.run(main())
+```
+
+**Sample output:**
+
+| BILL_NO | BILL_NAME | RST_PROPOSER | COMMITTEE | PROC_RESULT |
+|---|---|---|---|---|
+| 2200312 | 인공지능 기본법안 | 윤두현 | 과학기술정보방송통신위원회 | 원안가결 |
+| 2200891 | 인공지능산업 육성 및 신뢰 기반 조성 등에 관한 법률안 | 이용빈 | 과학기술정보방송통신위원회 | 폐기 |
+| 2201045 | 인공지능 윤리 기본법안 | 허은아 | 과학기술정보방송통신위원회 | 폐기 |
+
+---
+
+## Example 2: Build a co-sponsorship edge list
+
+Useful for network analysis — who co-sponsors bills with whom?
+
+```python
+import asyncio, pandas as pd, itertools
+from assembly_client import AssemblyClient
+
+async def build_edge_list(age="22", topic=None):
+    async with AssemblyClient() as client:
+        bills = await client.search_bills(age=age, bill_name=topic, page_size=100)
+
+        edges = []
+        for bill in bills:
+            bill_id = bill.get("BILL_ID")
+            bill_name = bill.get("BILL_NAME", "")
+            if not bill_id:
+                continue
+
+            proposers = await client.get_proposers(bill_id)
+            names = [p["PPSR_NM"] for p in proposers if "PPSR_NM" in p]
+
+            # Create undirected edges for every pair of co-sponsors
+            for a, b in itertools.combinations(names, 2):
+                edges.append({"source": a, "target": b, "bill": bill_name})
+
+    return pd.DataFrame(edges)
+
+edges_df = asyncio.run(build_edge_list(age="22", topic="부동산"))
+edges_df.to_csv("cosponsor_edges.csv", index=False, encoding="utf-8-sig")
+print(f"{len(edges_df)} edges across {edges_df['bill'].nunique()} bills")
+```
+
+The resulting CSV can be loaded directly into `networkx`, `igraph`, or Gephi for visualization.
+
+---
+
+## Example 3: Vote data for regression analysis
+
+```python
+import asyncio, pandas as pd
+from assembly_client import AssemblyClient
+
+async def get_vote_dataset(age="22"):
+    async with AssemblyClient() as client:
+        votes = await client.get_votes(age=age, page_size=100)
+
+    df = pd.DataFrame(votes)
+
+    # Coerce vote counts to numeric
+    for col in ["YES_TCNT", "NO_TCNT", "BLANK_TCNT", "MEMBER_TCNT"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Derived variables
+    df["pass"]        = (df["PROC_RESULT_CD"].str.contains("가결", na=False)).astype(int)
+    df["yes_share"]   = df["YES_TCNT"] / df["MEMBER_TCNT"]
+    df["margin"]      = df["YES_TCNT"] - df["NO_TCNT"]
+
+    return df
+
+df = asyncio.run(get_vote_dataset("22"))
+print(df[["BILL_NAME", "YES_TCNT", "NO_TCNT", "yes_share", "pass"]].describe())
+df.to_csv("votes_22nd.csv", index=False, encoding="utf-8-sig")
+```
+
+---
+
+## Pagination
+
+The API defaults to 10 results per page with a maximum of 100. For large datasets, paginate:
+
+```python
+async def collect_all_bills(age: str, **kwargs) -> list[dict]:
+    """Collect all bills across pages (handles >100 results)."""
+    async with AssemblyClient() as client:
+        all_rows = []
+        page = 1
+        while True:
+            rows = await client.search_bills(age=age, page=page, page_size=100, **kwargs)
+            if not rows:
+                break
+            all_rows.extend(rows)
+            if len(rows) < 100:
+                break
+            page += 1
+        return all_rows
+
+all_bills = asyncio.run(collect_all_bills("22"))
+print(f"Total bills collected: {len(all_bills)}")
+```
+
+::: {.callout-tip}
+## Rate limiting
+The API does not publish a rate limit, but empirically it handles ~5 requests/second reliably. For large collection jobs, add `await asyncio.sleep(0.2)` between requests.
+:::

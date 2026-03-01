@@ -1,0 +1,192 @@
+---
+title: "Chapter 5: Research Cases"
+subtitle: "Three applied examples for political science research"
+---
+
+This chapter demonstrates three end-to-end research workflows using the Assembly API — from data collection to analysis-ready output. Each case is self-contained and can be adapted to a new research question.
+
+---
+
+## Case 1: Policy domain mapping across assemblies
+
+**Research question**: How has legislative attention to housing policy changed across the 20th, 21st, and 22nd assemblies?
+
+**Approach**: Collect all bills containing housing-related keywords in each assembly, compute filing rates, and visualize trends.
+
+```python
+import asyncio, pandas as pd
+import plotly.express as px
+from assembly_client import AssemblyClient
+
+KEYWORDS = ["주택", "부동산", "임대차", "전세", "분양"]
+
+async def collect_housing_bills():
+    results = []
+    async with AssemblyClient() as client:
+        for age in ["20", "21", "22"]:
+            for kw in KEYWORDS:
+                rows = await client.search_bills(age=age, bill_name=kw, page_size=100)
+                for r in rows:
+                    r["assembly"] = age
+                    r["keyword"] = kw
+                results.extend(rows)
+    return pd.DataFrame(results).drop_duplicates(subset="BILL_NO")
+
+df = asyncio.run(collect_housing_bills())
+
+# Summary by assembly and outcome
+summary = (
+    df.groupby(["assembly", "PROC_RESULT"])
+      .size()
+      .reset_index(name="n_bills")
+)
+
+fig = px.bar(summary, x="assembly", y="n_bills", color="PROC_RESULT",
+             title="Housing-related bills by assembly and outcome",
+             labels={"assembly": "Assembly", "n_bills": "Number of Bills"},
+             barmode="stack",
+             color_discrete_map={"원안가결": "#2ECC71", "수정가결": "#27AE60",
+                                  "폐기": "#E74C3C", "철회": "#E67E22"})
+fig.show()
+
+df.to_csv("housing_bills_20_22.csv", index=False, encoding="utf-8-sig")
+```
+
+**What you get**: A stacked bar chart and a CSV with ~300–500 housing-related bills spanning three assemblies, ready for content analysis or text modeling.
+
+---
+
+## Case 2: Co-sponsorship network for a policy domain
+
+**Research question**: What does the cross-party co-sponsorship network look like for environmental legislation in the 22nd Assembly?
+
+**Approach**: Collect bills with environmental keywords, pull co-sponsor lists, build an edge list, and export for network analysis.
+
+```python
+import asyncio, pandas as pd, itertools
+from assembly_client import AssemblyClient
+
+async def build_network(age="22", topic="환경"):
+    async with AssemblyClient() as client:
+        bills = await client.search_bills(age=age, bill_name=topic, page_size=100)
+        members_raw = await client.get_members(age=age, page_size=300)
+
+    # Build party lookup: member name → party
+    members = pd.DataFrame(members_raw)
+    party_map = members.set_index("HG_NM")["POLY_NM"].to_dict()
+
+    edges = []
+    async with AssemblyClient() as client:
+        for bill in bills:
+            bill_id = bill.get("BILL_ID")
+            if not bill_id:
+                continue
+            proposers = await client.get_proposers(bill_id)
+            names = [p["PPSR_NM"] for p in proposers if "PPSR_NM" in p]
+
+            for a, b in itertools.combinations(names, 2):
+                edges.append({
+                    "source": a, "source_party": party_map.get(a, "Unknown"),
+                    "target": b, "target_party": party_map.get(b, "Unknown"),
+                    "bill_name": bill.get("BILL_NAME", ""),
+                    "cross_party": party_map.get(a) != party_map.get(b),
+                })
+
+    return pd.DataFrame(edges)
+
+edges_df = asyncio.run(build_network(age="22", topic="환경"))
+
+print(f"Total co-sponsorship edges: {len(edges_df)}")
+print(f"Cross-party edges: {edges_df['cross_party'].sum()} ({edges_df['cross_party'].mean():.1%})")
+
+edges_df.to_csv("env_cosponsor_network.csv", index=False, encoding="utf-8-sig")
+```
+
+**Load into networkx for analysis:**
+
+```python
+import networkx as nx
+import pandas as pd
+
+df = pd.read_csv("env_cosponsor_network.csv")
+
+G = nx.from_pandas_edgelist(df, source="source", target="target", edge_attr=True)
+
+# Basic network stats
+print(f"Nodes (legislators): {G.number_of_nodes()}")
+print(f"Edges (co-sponsorships): {G.number_of_edges()}")
+print(f"Density: {nx.density(G):.4f}")
+
+# Most central legislators
+centrality = nx.degree_centrality(G)
+top10 = sorted(centrality.items(), key=lambda x: -x[1])[:10]
+for name, score in top10:
+    print(f"{name}: {score:.3f}")
+```
+
+---
+
+## Case 3: Vote cohesion analysis by party
+
+**Research question**: How cohesive is each major party's voting behavior in the 22nd Assembly? Does cohesion differ by policy domain?
+
+**Approach**: This case requires individual-level vote data, which the current Open API does not provide (only aggregate totals are available via `get_vote_results`). The aggregate data can still support an analysis of *outcomes* by domain.
+
+```r
+library(tidyverse)
+library(fixest)
+source("assembly_api.R")
+
+# Collect vote data
+votes <- get_votes(age = "22", page_size = 100) |>
+  mutate(
+    across(c(YES_TCNT, NO_TCNT, BLANK_TCNT, MEMBER_TCNT, VOTE_TCNT), as.integer),
+    passed      = as.integer(str_detect(PROC_RESULT_CD, "가결")),
+    yes_share   = YES_TCNT / MEMBER_TCNT,
+    oppose_rate = NO_TCNT  / VOTE_TCNT,
+    abstain_rate= BLANK_TCNT / VOTE_TCNT,
+    proc_date   = as.Date(PROC_DT, "%Y%m%d"),
+    year        = year(proc_date),
+    month       = floor_date(proc_date, "month")
+  )
+
+# Monthly pass rate
+monthly <- votes |>
+  group_by(month) |>
+  summarise(
+    n_votes   = n(),
+    pass_rate = mean(passed, na.rm = TRUE),
+    avg_yes   = mean(yes_share, na.rm = TRUE)
+  )
+
+ggplot(monthly, aes(x = month)) +
+  geom_line(aes(y = pass_rate), color = "#2ECC71", linewidth = 1) +
+  geom_line(aes(y = avg_yes),   color = "#2E86C1", linewidth = 1, linetype = "dashed") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "22nd Assembly: monthly pass rate and average yes share",
+       x = NULL, y = NULL,
+       caption = "Green = pass rate, Blue dashed = avg yes share") +
+  theme_minimal()
+
+# Export for further analysis
+votes |>
+  select(BILL_NO, BILL_NAME, PROC_DT, YES_TCNT, NO_TCNT, BLANK_TCNT,
+         MEMBER_TCNT, PROC_RESULT_CD, passed, yes_share) |>
+  write_csv("votes_22nd_analysis.csv")
+```
+
+::: {.callout-note}
+## Individual-level vote data
+For member-level vote analysis (how each legislator voted), the NAAS (National Assembly Archive System) at [naas.go.kr](https://naas.go.kr) provides this data, though it requires a separate access request. The 열린국회정보 API currently provides only aggregate totals.
+:::
+
+---
+
+## Going further
+
+These cases are starting points. Some natural extensions:
+
+- **Text analysis**: add a keyword coding step to classify bills by policy domain, then run domain-specific analyses
+- **Merge with external data**: combine Assembly data with KGSS survey data, election results, or economic indicators for multi-level modeling
+- **Time series**: the `PROPOSE_DT` field enables event-study designs around policy shocks or electoral transitions
+- **Replication**: these workflows reproduce the data collection steps in several recent comparative legislative studies — see the [open-assembly-mcp](https://github.com/kyusik-yang/open-assembly-mcp) GitHub for details

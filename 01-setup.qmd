@@ -1,0 +1,182 @@
+---
+title: "Chapter 1: Setup"
+subtitle: "Get your API key and install the tools"
+---
+
+This chapter walks through everything you need to start querying Korean National Assembly data — from registering for an API key to running your first query.
+
+---
+
+## Step 1 — Get an API key
+
+The 열린국회정보 API is **free** for research use. You need to register to receive a key.
+
+1. Go to [open.assembly.go.kr](https://open.assembly.go.kr)
+2. Click **회원가입** (Sign up) in the top-right corner
+3. Complete registration (email verification required)
+4. After logging in, navigate to **마이페이지 → 오픈API 키 발급**
+5. Click **발급** — your API key appears immediately
+
+::: {.callout-tip}
+## Key format
+Your API key is a 32-character alphanumeric string (e.g., `d74b52f3a3d340969a16879df76c1496`). Keep it in a `.env` file and never commit it to a public repository.
+:::
+
+---
+
+## Step 2 — Test the API in your browser
+
+Before installing anything, confirm your key works. Paste this URL into your browser (replace `YOUR_KEY`):
+
+```
+https://open.assembly.go.kr/portal/openapi/nzmimeepazxkubdpn?KEY=YOUR_KEY&Type=json&AGE=22&pSize=3
+```
+
+You should see a JSON response with three bills from the 22nd Assembly. If you see `ERROR-290`, the key is incorrect. If you see `ERROR-000`, the API is temporarily unavailable.
+
+---
+
+## Step 3 — Choose your access mode
+
+::: {.panel-tabset}
+
+### MCP + Claude Desktop
+
+The MCP server lets Claude call the Assembly API directly during a conversation. Install it with one command:
+
+```bash
+# Install uv if you don't have it
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Test the MCP server (replace with your key)
+ASSEMBLY_API_KEY=your-key uvx data-go-mcp.open-assembly
+```
+
+Then add it to your Claude Desktop config file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "open-assembly": {
+      "command": "uvx",
+      "args": ["data-go-mcp.open-assembly@latest"],
+      "env": {
+        "ASSEMBLY_API_KEY": "your-key-here"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop. You will see the Assembly tools listed in the tool panel.
+
+→ Continue to [Chapter 2: MCP + Claude](02-mcp.qmd) for how to use these tools.
+
+### Python
+
+```bash
+pip install httpx python-dotenv
+```
+
+Create a `.env` file in your project directory:
+
+```
+ASSEMBLY_API_KEY=your-key-here
+```
+
+Test with a quick script:
+
+```python
+import httpx, os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+resp = httpx.get(
+    "https://open.assembly.go.kr/portal/openapi/nzmimeepazxkubdpn",
+    params={
+        "KEY": os.getenv("ASSEMBLY_API_KEY"),
+        "Type": "json",
+        "AGE": "22",
+        "pSize": "3",
+    }
+)
+print(resp.json())
+```
+
+→ Continue to [Chapter 3: Python](03-python.qmd) for a full async client.
+
+### R
+
+```r
+install.packages(c("httr2", "jsonlite", "tidyverse"))
+```
+
+Create a `.Renviron` file in your home directory:
+
+```
+ASSEMBLY_API_KEY=your-key-here
+```
+
+Reload R or run `readRenviron("~/.Renviron")`, then test:
+
+```r
+library(httr2)
+
+resp <- request("https://open.assembly.go.kr/portal/openapi/nzmimeepazxkubdpn") |>
+  req_url_query(
+    KEY    = Sys.getenv("ASSEMBLY_API_KEY"),
+    Type   = "json",
+    AGE    = "22",
+    pSize  = "3"
+  ) |>
+  req_perform() |>
+  resp_body_json()
+
+str(resp, max.level = 2)
+```
+
+→ Continue to [Chapter 4: R](04-r.qmd) for a full tidy workflow.
+
+:::
+
+---
+
+## API response structure
+
+Every 열린국회정보 endpoint returns the same envelope:
+
+```json
+{
+  "nzmimeepazxkubdpn": [
+    {
+      "head": [
+        { "list_total_count": 15234 },
+        { "RESULT": { "CODE": "INFO-000", "MESSAGE": "정상" } }
+      ]
+    },
+    {
+      "row": [
+        { "BILL_NO": "2200001", "BILL_NAME": "...", ... },
+        ...
+      ]
+    }
+  ]
+}
+```
+
+Key response codes:
+
+| Code | Meaning |
+|---|---|
+| `INFO-000` | Success — `row` contains results |
+| `INFO-200` | No results found (not an error) |
+| `ERROR-290` | Invalid API key |
+| `ERROR-310` | Endpoint does not exist |
+
+::: {.callout-warning}
+## Single-record edge case
+When a query returns exactly one result, the API returns `row` as a **dict** instead of a list. Always normalize: `rows if isinstance(rows, list) else [rows]`.
+:::

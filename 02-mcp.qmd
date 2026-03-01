@@ -1,0 +1,113 @@
+---
+title: "Chapter 2: MCP + Claude"
+subtitle: "Natural-language queries against the Assembly API"
+---
+
+This chapter explains what MCP is, how the open-assembly MCP server works, and how to use it for exploratory legislative research in Claude Desktop.
+
+---
+
+## What is MCP?
+
+**Model Context Protocol (MCP)** is an open standard (developed by Anthropic) that lets AI assistants call external tools during a conversation. Instead of copy-pasting data into a chat window, you install a *server* that Claude can invoke directly.
+
+```
+Without MCP                         With MCP
+─────────────────────────────       ─────────────────────────────────────────
+You → open.assembly.go.kr           You: "22대 AI 법안 찾아줘"
+You → copy JSON                          ↓
+You → paste into Claude             Claude → [calls search_bills tool]
+Claude → gives you a summary             ↓
+                                    Assembly API → returns results
+                                         ↓
+                                    Claude → summarizes + reasons over data
+```
+
+For legislative research, this means you can ask questions like:
+
+> "Find all bills on housing regulation proposed in the 22nd Assembly. For each one, tell me who the lead proposer is and what party they belong to."
+
+...and Claude will chain the necessary API calls, parse the results, and give you a structured answer — without you writing a single line of code.
+
+---
+
+## Available tools
+
+After installing the MCP server ([Chapter 1](01-setup.qmd)), Claude gains access to these tools:
+
+| Tool | What it does |
+|---|---|
+| `search_bills` | Search bills by assembly, keyword, proposer, committee, or outcome |
+| `get_bill_detail` | Full record for one bill: committee schedule, plenary result, original text link |
+| `get_member_info` | Member roster by party, district, or committee |
+| `get_vote_results` | Plenary vote tallies (yes / no / abstain / absent) |
+| `get_bill_review` | Bill's processing timeline through committee and plenary |
+| `get_bill_proposers` | All co-sponsors for a given bill |
+| `get_committee_members` | Members of a specific committee |
+
+---
+
+## Example queries
+
+### Basic bill search
+
+> "22대 국회에서 발의된 인공지능 관련 법률안 목록을 알려줘. 처리결과도 포함해서."
+
+Claude will call `search_bills(age="22", bill_name="인공지능")` and return a formatted list.
+
+---
+
+### Chained query: bill + proposers + party
+
+> "반도체특별법의 대표발의자와 공동발의자 명단을 가져오고, 각 의원의 정당도 알려줘."
+
+Claude chains three calls:
+
+1. `search_bills(bill_name="반도체특별법")` → gets `BILL_ID`
+2. `get_bill_proposers(bill_id=...)` → gets proposer list
+3. `get_member_info` → resolves each proposer's party
+
+---
+
+### Vote analysis
+
+> "22대 국회에서 부결된 법안 10개를 찾고, 찬성과 반대 표 차이가 가장 작았던 것부터 정렬해줘."
+
+Claude calls `get_vote_results(age="22")`, filters for `PROC_RESULT_CD == "부결"`, and sorts by the margin.
+
+---
+
+### Committee composition
+
+> "법제사법위원회 위원 명단을 가져오고 정당별로 몇 명인지 세어줘."
+
+Claude calls `get_committee_members(committee="법제사법위원회")` and aggregates by party.
+
+---
+
+## Tips for effective MCP queries
+
+::: {.callout-tip}
+## Be specific about the assembly term
+Always include the assembly number (대수) in your query. The API covers the 18th–22nd assemblies. "22대" = 22nd National Assembly (2024–present).
+:::
+
+::: {.callout-tip}
+## Use BILL_ID not BILL_NO for proposer queries
+`search_bills` returns both `BILL_ID` (e.g., `PRC_Y2Z6X0...`) and `BILL_NO` (e.g., `2217175`). The `get_bill_proposers` tool requires `BILL_ID`. If you ask Claude to get proposers, make sure it uses the right field.
+:::
+
+::: {.callout-note}
+## What MCP cannot do (yet)
+Committee transcripts (회의록), citizen petitions (청원), and bill full-text rationale (제안이유) are distributed as file downloads only — no Open API endpoint exists. For transcripts, use [likms.assembly.go.kr/record](https://likms.assembly.go.kr/record/).
+:::
+
+---
+
+## Interactive demo
+
+You can try the Assembly data without Claude Desktop at the interactive web app:
+
+[Open Assembly Explorer ↗](https://national-assembly-kr.streamlit.app){.btn .btn-primary}
+
+The Explorer uses the same API under the hood, with a point-and-click interface for bill search, member lookup, and vote charts.

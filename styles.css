@@ -1,0 +1,50 @@
+/* Assembly Tutorial — custom styles */
+
+/* Navbar */
+.navbar {
+  background-color: #1B4F72 !important;
+}
+.navbar-brand, .navbar-nav .nav-link {
+  color: #ffffff !important;
+}
+
+/* Hero block on home page */
+.hero {
+  background: linear-gradient(135deg, #1B4F72 0%, #2E86C1 100%);
+  color: white;
+  padding: 3rem 2rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+.hero h1 { color: white; font-size: 2rem; }
+.hero p  { color: #d6eaf8; font-size: 1.1rem; }
+
+/* Callout overrides */
+.callout-tip    { border-left-color: #2ECC71; }
+.callout-note   { border-left-color: #2E86C1; }
+.callout-warning{ border-left-color: #E67E22; }
+
+/* Step badges */
+.step-badge {
+  display: inline-block;
+  background: #1B4F72;
+  color: white;
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  text-align: center;
+  line-height: 28px;
+  font-weight: bold;
+  margin-right: 6px;
+}
+
+/* Code blocks */
+pre.sourceCode {
+  border-radius: 6px;
+  font-size: 0.88rem;
+}
+
+/* Result tables */
+.result-table th { background-color: #EBF5FB; }
+
+/* Footer */
+.nav-footer { border-top: 1px solid #dee2e6; padding: 1rem 0; }

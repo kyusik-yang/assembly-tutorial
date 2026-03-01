@@ -1,0 +1,86 @@
+---
+title: "Korean Legislative Data for Researchers"
+subtitle: "A practical guide to the Korean National Assembly Open API"
+---
+
+::: {.hero}
+# Korean Legislative Data for Researchers
+
+Access bills, members, vote records, and committee data from the Korean National Assembly — directly from your code or AI assistant.
+
+[Get Started →](01-setup.qmd){.btn .btn-light .btn-lg}  [Live Demo ↗](https://national-assembly-kr.streamlit.app){.btn .btn-outline-light .btn-lg}
+:::
+
+## What is this tutorial?
+
+This tutorial shows researchers how to access the Korean National Assembly's **열린국회정보 Open API** — a free, official API covering every bill filed since the 18th Assembly (2008), full member rosters, plenary vote tallies, committee compositions, and co-sponsor networks.
+
+The tutorial covers three access modes:
+
+| Mode | Best for | Requires |
+|---|---|---|
+| **MCP + Claude** | Exploratory research, natural-language queries | API key + Claude Desktop |
+| **Python** | Data collection scripts, statistical analysis | API key + Python |
+| **R** | Regression, tidyverse-style analysis | API key + R |
+
+---
+
+## Why Korean legislative data?
+
+The Korean National Assembly is one of the most data-rich legislatures in East Asia, yet it is systematically underused in comparative legislative studies — partly because the data has historically been hard to access programmatically.
+
+The 열린국회정보 API changes this. It provides:
+
+- **Bills**: every member-sponsored bill from the 18th–22nd assembly, with proposer names, committee assignments, dates, and outcomes
+- **Vote records**: plenary yes/no/abstain tallies by bill
+- **Members**: party affiliation, district, committee membership, election history
+- **Co-sponsors**: full list of co-signatories per bill, enabling network analysis
+
+### Research this data can support
+
+::: {.columns}
+::: {.column width="50%"}
+**Legislative behavior**
+
+- Bill sponsorship patterns by party or region
+- Co-sponsorship network analysis (who works with whom)
+- Proposal-to-passage rates across administrations
+- Partisan voting cohesion scores
+:::
+::: {.column width="50%"}
+**Policy analysis**
+
+- Track policy domain activity over time (e.g., housing, AI, labor)
+- Identify policy windows — sudden spikes in bill filings
+- Compare committee gatekeeping across assemblies
+- Cross-reference with election results or public opinion data
+:::
+:::
+
+---
+
+## What you will build
+
+By the end of this tutorial you will be able to:
+
+1. Query the Assembly API with a single line of Python or R
+2. Ask Claude — in plain language — to find, filter, and summarize legislative records
+3. Collect a structured dataset of bills or votes for use in your own analysis
+
+---
+
+## Prerequisites
+
+- A free API key from [open.assembly.go.kr](https://open.assembly.go.kr) (takes ~5 minutes)
+- Python 3.10+ **or** R 4.0+ (or both)
+- [Claude Desktop](https://claude.ai/download) if you want to use the MCP integration
+
+No prior experience with the Korean government's data systems is needed.
+
+---
+
+::: {.callout-note}
+## About this project
+
+The tools demonstrated in this tutorial are built on the [open-assembly-mcp](https://github.com/kyusik-yang/open-assembly-mcp) project — an open-source MCP server that wraps the 열린국회정보 API. The server was developed by Kyusik Yang (NYU Department of Politics) following the conventions of [Koomook/data-go-mcp-servers](https://github.com/Koomook/data-go-mcp-servers), and built with [Claude Code](https://claude.ai/code).
+:::
