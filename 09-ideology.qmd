@@ -1,0 +1,274 @@
+---
+title: "DW-NOMINATE & Ideological Positioning"
+subtitle: "Ideal points, polarization trends, and spatial voting models for the Korean National Assembly"
+---
+
+## Overview
+
+DW-NOMINATE (Dynamic Weighted Nominal Three-Step Estimation) places legislators on a common ideological scale using their roll-call voting records. Unlike party labels - which shift with frequent mergers and rebrandings in Korean politics - ideal points provide a **continuous, member-level measure** that is comparable across assemblies.
+
+The `kna` master database includes **936 DW-NOMINATE ideal point estimates** for the 20th-22nd Assembly (2016-present), aligned across terms using 218 bridging legislators.
+
+**What you will learn:**
+
+1. What DW-NOMINATE measures and why it matters for Korean politics
+2. How to load and visualize ideal points
+3. Polarization trends across the 20th-22nd Assembly
+4. Using ideal points as independent/dependent variables in regression
+
+::: {.callout-tip}
+**Interactive explorer:** See all 936 legislator-terms on an interactive scatterplot at [Uijeong Jido 의정지도](https://kyusik-yang.github.io/korean-bill-lifecycle/voteview.html).
+:::
+
+## Why DW-NOMINATE for Korea?
+
+Korean parties undergo frequent mergers, splits, and name changes. What was the Grand National Party (한나라당) became the Saenuri Party (새누리당), then the Liberty Korea Party (자유한국당), then the United Future Party (미래통합당), and finally the People Power Party (국민의힘) - all within a decade. The progressive bloc has undergone similar rebranding cycles.
+
+Simple party-label-based ideology measures cannot capture:
+
+- **Within-party heterogeneity** (moderates vs. hardliners)
+- **Cross-party bridges** (legislators who vote across party lines)
+- **Temporal shifts** (has the same party moved left or right?)
+
+Roll-call-based ideal points solve all three. DW-NOMINATE specifically enables **cross-assembly comparison** by exploiting bridging legislators - members who serve in multiple terms - to anchor a common ideological scale.
+
+### Data foundation
+
+| Metric | Value |
+|---|---|
+| Legislator-terms | 936 |
+| Assemblies | 20th (2016-20), 21st (2020-24), 22nd (2024-) |
+| Roll call votes | 2,425,113 member-level records |
+| Bridging legislators | 218 (126 across 20-21st, 151 across 21-22nd, 68 all three) |
+| Estimation method | DW-NOMINATE via R `wnominate` + `pscl` packages |
+| Alignment | Sign-flipped so negative = liberal (진보), positive = conservative (보수) |
+
+## Loading ideal points
+
+### Python (via kna)
+
+```python
+from kna.data import BillDB
+
+db = BillDB()
+ip = db.ideal_points()
+
+print(f"Legislator-terms: {len(ip)}")
+print(f"Columns: {list(ip.columns)}")
+print(ip.head())
+```
+
+Key columns:
+
+| Column | Description |
+|---|---|
+| `member_id` | MONA_CD (unique legislator identifier) |
+| `member_name` | Legislator name |
+| `term` | Assembly number (20, 21, 22) |
+| `party` | Party at time of service |
+| `coord1D` | Raw W-NOMINATE first dimension |
+| `aligned` | DW-NOMINATE, cross-assembly aligned and sign-flipped |
+| `party_bloc` | Broad bloc (liberal, conservative, left, centrist, independent) |
+
+The `aligned` column is what you should use for analysis. It is:
+
+- **Cross-assembly comparable** (a score of -0.3 means the same thing in the 20th and 22nd)
+- **Sign-flipped** to match political convention: negative = liberal (진보), positive = conservative (보수)
+
+### R
+
+```r
+library(readr)
+library(dplyr)
+
+ip <- read_csv("data/processed/dw_ideal_points_20_22.csv") %>%
+  mutate(aligned = -aligned)  # flip: negative = liberal, positive = conservative
+
+ip %>%
+  group_by(term, party_bloc) %>%
+  summarise(n = n(), mean_score = mean(aligned), .groups = "drop") %>%
+  arrange(term, mean_score)
+```
+
+### Via kna CLI
+
+```bash
+# Quick lookup
+kna legislator 이재명 --age 22
+#   ideal point   -0.366 (DW-NOMINATE)
+#   rank          103 / 304 (← 진보 ··· 보수 →)
+
+# Export for analysis
+kna export idealpoints.csv
+```
+
+## Visualizing the ideological space
+
+### Scatter plot by assembly
+
+```python
+import plotly.express as px
+
+fig = px.strip(
+    ip, x="aligned", y="term", color="party_bloc",
+    hover_data=["member_name", "party"],
+    color_discrete_map={
+        "liberal": "#004EA2", "conservative": "#E61E2B",
+        "left": "#FFCC00", "centrist": "#FF6B00",
+        "independent": "#999999",
+    },
+    labels={"aligned": "DW-NOMINATE (← 진보  ···  보수 →)", "term": "Assembly"},
+    title="Ideological Distribution by Assembly",
+)
+fig.update_layout(template="plotly_white", height=400)
+fig.show()
+```
+
+### Density by party
+
+```python
+import plotly.figure_factory as ff
+
+dem = ip[ip["party"] == "더불어민주당"]["aligned"]
+ppp = ip[ip["party"] == "국민의힘"]["aligned"]
+
+fig = ff.create_distplot(
+    [dem, ppp],
+    ["더불어민주당", "국민의힘"],
+    colors=["#004EA2", "#E61E2B"],
+    bin_size=0.02, show_rug=False,
+)
+fig.update_layout(
+    xaxis_title="DW-NOMINATE (← 진보  ···  보수 →)",
+    template="plotly_white", height=350,
+)
+fig.show()
+```
+
+## Polarization analysis
+
+Polarization is measured as the distance between the liberal and conservative bloc means:
+
+$$\text{Polarization}_t = |\bar{x}_{liberal,t} - \bar{x}_{conservative,t}|$$
+
+```python
+BROAD_BLOC = {
+    "국민의힘": "conservative", "미래통합당": "conservative",
+    "미래한국당": "conservative", "자유한국당": "conservative",
+    "더불어민주당": "liberal", "열린민주당": "liberal",
+    "민생당": "liberal", "새로운미래": "liberal",
+}
+
+ip["broad"] = ip["party"].map(BROAD_BLOC)
+
+polar = (
+    ip[ip["broad"].isin(["liberal", "conservative"])]
+    .groupby(["term", "broad"])["aligned"]
+    .mean()
+    .unstack()
+)
+polar["gap"] = abs(polar["liberal"] - polar["conservative"])
+print(polar.round(3))
+```
+
+Expected output:
+
+```
+broad  conservative  liberal    gap
+term
+20         0.401    -0.339  0.739
+21         0.427    -0.386  0.813
+22         0.432    -0.372  0.804
+```
+
+The gap widened from 0.739 (20th) to 0.813 (21st), then slightly narrowed to 0.804 (22nd). This pattern is consistent with the intensification of partisan conflict during the 21st Assembly.
+
+### Within-party sorting
+
+Polarization can increase through two mechanisms: parties moving apart (divergence) or members within parties becoming more homogeneous (sorting). Standard deviations reveal which:
+
+```python
+sorting = (
+    ip[ip["party"].isin(["더불어민주당", "국민의힘"])]
+    .groupby(["term", "party"])["aligned"]
+    .agg(["mean", "std", "count"])
+    .round(3)
+)
+print(sorting)
+```
+
+Declining standard deviations indicate sorting - fewer moderates within each party.
+
+## Using ideal points in regression
+
+### As independent variable
+
+Ideal points predict legislative behavior beyond party labels:
+
+```r
+library(fixest)
+
+# Does ideology predict bill passage (controlling for party)?
+bills <- read_parquet("data/processed/master_bills_22.parquet") %>%
+  filter(bill_kind == "법률안", ppsr_kind == "의원")
+
+# Join ideal points to bills via lead proposer
+bills_ip <- bills %>%
+  inner_join(ip %>% filter(term == 22), by = c("rst_mona_cd" = "member_id"))
+
+feols(enacted ~ aligned + I(aligned^2) | committee_nm, data = bills_ip)
+```
+
+### As dependent variable
+
+What predicts a legislator's ideological position?
+
+```r
+# Merge legislator metadata
+members <- read_parquet("data/processed/legislator_id_mapping.parquet")
+
+ip_full <- ip %>%
+  filter(term == 22) %>%
+  left_join(members, by = c("member_id"))
+
+# Does electoral method matter?
+feols(aligned ~ pr_elected + female + seniority | party, data = ip_full)
+```
+
+### Spatial voting models
+
+For advanced applications, the raw roll-call data enables custom ideal point estimation:
+
+```r
+library(pscl)
+
+# Load roll calls
+votes <- read_parquet("data/processed/roll_calls_all.parquet") %>%
+  filter(term == 22)
+
+# Pivot to vote matrix (legislators x bills)
+vote_matrix <- votes %>%
+  mutate(vote_num = case_when(
+    vote == "찬성" ~ 1, vote == "반대" ~ 6, TRUE ~ NA_real_
+  )) %>%
+  select(member_name, vote_event, vote_num) %>%
+  pivot_wider(names_from = vote_event, values_from = vote_num)
+
+# Estimate with wnominate
+rc <- rollcall(as.matrix(vote_matrix[, -1]),
+               legis.names = vote_matrix$member_name)
+result <- wnominate(rc, dims = 2, polarity = c(1, 1))
+```
+
+## Key references
+
+- Poole, K. T., & Rosenthal, H. (1985). A spatial model for legislative roll call analysis. *American Journal of Political Science*, 29(2), 357-384.
+- Poole, K. T., & Rosenthal, H. (2007). *Ideology and Congress*. Transaction Publishers.
+- Hix, S., & Jun, H. W. (2009). Party behaviour in the parliamentary arena: The case of the Korean National Assembly. *Party Politics*, 15(6), 667-694.
+- Carroll, R., et al. (2009). Measuring bias and uncertainty in DW-NOMINATE ideal point estimates via the parametric bootstrap. *Political Analysis*, 17(3), 261-275.
+
+## Interactive explorer
+
+Explore all 936 legislator-terms interactively:
+
+- [Uijeong Jido 의정지도](https://kyusik-yang.github.io/korean-bill-lifecycle/voteview.html) - scatter plot with party colors, search, and polarization trend

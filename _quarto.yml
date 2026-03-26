@@ -26,6 +26,8 @@ website:
         text: "7. Voting"
       - href: 08-network.qmd
         text: "8. Networks"
+      - href: 09-ideology.qmd
+        text: "9. Ideology"
     right:
       - icon: github
         href: https://github.com/kyusik-yang/korean-bill-lifecycle
@@ -52,6 +54,7 @@ website:
           - 05-cases.qmd
           - 07-voting.qmd
           - 08-network.qmd
+          - 09-ideology.qmd
   page-footer:
     left: "Built with [Quarto](https://quarto.org) · Data from [열린국회정보](https://open.assembly.go.kr)"
     right: "Kyusik Yang · NYU Department of Politics"
