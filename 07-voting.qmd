@@ -1,0 +1,212 @@
+---
+title: "Voting Behavior & Party Discipline"
+subtitle: "Rice index, defection analysis, and roll-call panel data"
+---
+
+## Overview
+
+This chapter builds a **member-level roll-call panel** from the Open Assembly API and computes standard measures of party cohesion. The output is a tidy (bill x member) dataset ready for logistic regression or difference-in-differences designs.
+
+**What you will build:**
+
+1. Bill-level vote tallies (yes/no/abstain per bill)
+2. Member-level roll-call records (how each legislator voted)
+3. **Rice index** - standard measure of party cohesion
+4. **Defection flags** - which members broke party line
+5. Cross-party coalition detection
+
+## Step 1: Collect voted bills
+
+```python
+import httpx
+import pandas as pd
+import time
+
+API_KEY = "YOUR_KEY"
+BASE = "https://open.assembly.go.kr/portal/openapi"
+
+def api_get(endpoint, **params):
+    """Single API call with pagination support."""
+    params = {"KEY": API_KEY, "Type": "json", "pSize": 100, **params}
+    r = httpx.get(f"{BASE}/{endpoint}", params=params,
+                  headers={"User-Agent": "research-client"})
+    body = r.json()
+    rows = body.get(endpoint, [{}])
+    if isinstance(rows, dict):
+        return []
+    head = rows[0] if rows else {}
+    if "head" in head:
+        code = head["head"][1]["RESULT"]["CODE"]
+        if code != "INFO-000":
+            return []
+        return rows[1].get("row", [])
+    return []
+
+# Get bills with vote records (22nd Assembly)
+voted_bills = []
+page = 1
+while True:
+    rows = api_get("ncocpgfiaoituanbr", AGE="22", pIndex=page)
+    if not rows:
+        break
+    voted_bills.extend(rows)
+    page += 1
+    time.sleep(0.3)
+
+df_votes = pd.DataFrame(voted_bills)
+print(f"Bills with vote tallies: {len(df_votes)}")
+```
+
+## Step 2: Collect member-level roll calls
+
+For each voted bill, fetch individual member votes:
+
+```python
+def get_member_votes(bill_id, age="22"):
+    """Get per-member vote for one bill."""
+    rows = api_get("nojepdqqaweusdfbi", AGE=age, BILL_ID=bill_id, pSize=300)
+    return rows
+
+# Collect roll calls (rate-limited)
+all_rolls = []
+for i, row in df_votes.iterrows():
+    bill_id = row["BILL_ID"]
+    members = get_member_votes(bill_id)
+    for m in members:
+        m["BILL_ID"] = bill_id
+        m["BILL_NAME"] = row.get("BILL_NAME", "")
+    all_rolls.extend(members)
+
+    if (i + 1) % 10 == 0:
+        print(f"  {i + 1}/{len(df_votes)} bills collected")
+    time.sleep(0.5)  # respect rate limits
+
+panel = pd.DataFrame(all_rolls)
+print(f"Roll-call panel: {len(panel)} member-vote records")
+```
+
+::: {.callout-tip}
+**Faster alternative:** If you have the `kna` CLI installed (see [Chapter 6](06-kna.qmd)), you can skip API collection entirely:
+
+```python
+from kna.data import BillDB
+db = BillDB()
+panel = db.roll_calls(age=22)  # 383K records, instant
+```
+:::
+
+## Step 3: Rice index
+
+The **Rice index** measures party cohesion on a 0-100 scale:
+
+$$\text{Rice}_p = \frac{|Y_p - N_p|}{Y_p + N_p} \times 100$$
+
+where $Y_p$ and $N_p$ are the number of yes and no votes from party $p$ on a given bill. A score of 100 means perfect unity; 0 means an even split.
+
+```python
+def rice_index(group):
+    """Compute Rice index for a party-bill group."""
+    yes = (group["RESULT_VOTE_MOD"] == "찬성").sum()
+    no = (group["RESULT_VOTE_MOD"] == "반대").sum()
+    total = yes + no
+    if total == 0:
+        return None
+    return abs(yes - no) / total * 100
+
+# Compute per party-bill
+rice = (
+    panel
+    .groupby(["BILL_ID", "HG_NM_PARTY"])  # party field name may vary
+    .apply(rice_index)
+    .reset_index(name="rice")
+)
+
+# Average Rice index by party
+rice_by_party = (
+    rice
+    .groupby("HG_NM_PARTY")["rice"]
+    .agg(["mean", "median", "count"])
+    .sort_values("mean", ascending=False)
+)
+print(rice_by_party.round(1))
+```
+
+## Step 4: Identify defectors
+
+A **defection** occurs when a member votes against their party's majority position:
+
+```python
+def party_majority(group):
+    """Determine party majority position (yes or no)."""
+    yes = (group["RESULT_VOTE_MOD"] == "찬성").sum()
+    no = (group["RESULT_VOTE_MOD"] == "반대").sum()
+    return "찬성" if yes >= no else "반대"
+
+# Get majority position per party per bill
+majorities = (
+    panel
+    .groupby(["BILL_ID", "HG_NM_PARTY"])
+    .apply(party_majority)
+    .reset_index(name="party_line")
+)
+
+# Join back to individual votes
+panel_with_line = panel.merge(majorities, on=["BILL_ID", "HG_NM_PARTY"])
+
+# Flag defections (voted, but against party line)
+panel_with_line["defected"] = (
+    (panel_with_line["RESULT_VOTE_MOD"].isin(["찬성", "반대"])) &
+    (panel_with_line["RESULT_VOTE_MOD"] != panel_with_line["party_line"])
+).astype(int)
+
+# Top defectors
+defectors = (
+    panel_with_line
+    .groupby("HG_NM")["defected"]
+    .agg(["sum", "count"])
+    .assign(rate=lambda d: d["sum"] / d["count"] * 100)
+    .sort_values("sum", ascending=False)
+    .head(20)
+)
+print(defectors.round(1))
+```
+
+## Step 5: Contested votes
+
+Identify bills where the two major parties voted differently:
+
+```python
+# Pivot: party majority per bill
+pivot = (
+    majorities
+    .pivot_table(index="BILL_ID", columns="HG_NM_PARTY", values="party_line", aggfunc="first")
+)
+
+# Contested = major parties split
+if "더불어민주당" in pivot.columns and "국민의힘" in pivot.columns:
+    contested = pivot[pivot["더불어민주당"] != pivot["국민의힘"]]
+    print(f"Contested bills: {len(contested)} / {len(pivot)} ({len(contested)/len(pivot)*100:.1f}%)")
+```
+
+## Export
+
+```python
+# Tidy panel for regression
+panel_with_line.to_csv("vote_panel.csv", index=False, encoding="utf-8-sig")
+
+# Rice index summary
+rice.to_csv("rice_index.csv", index=False)
+```
+
+The vote panel is ready for models like:
+
+```r
+# R: Party discipline as DV
+library(fixest)
+feols(defected ~ seniority + margin + contested | party + session, data = panel)
+```
+
+## References
+
+- Rice, S. A. (1928). *Quantitative Methods in Politics*. New York: Knopf.
+- Hix, S., Noury, A., & Roland, G. (2005). Power to the parties: Cohesion and competition in the European Parliament, 1979-2001. *British Journal of Political Science*, 35(2), 209-234.

@@ -1,0 +1,276 @@
+---
+title: "The kna CLI: Master Database"
+subtitle: "Query 110K bills, 2.4M votes, and ideal points from your terminal"
+---
+
+## Overview
+
+The `kna` (Korean National Assembly) CLI provides offline, instant access to a **pre-built master database** that integrates 8 Open Assembly API endpoints into a single queryable interface. Unlike the live API (Chapters 3-4), `kna` works on processed Parquet files - no API key needed, no rate limits, no network latency.
+
+| Feature | Live API (Ch 3-4) | **kna CLI** |
+|---|---|---|
+| Bills | 18-22nd (per query) | **17-22nd (110K pre-loaded)** |
+| Lifecycle timestamps | Requires chaining 4+ endpoints | **Single row per bill, 8 APIs merged** |
+| Roll call votes | Per-bill, rate-limited | **2.4M votes, instant** |
+| DW-NOMINATE | Not available | **936 legislator-terms** |
+| Propose-reason texts | Not available | **60K bill texts** |
+| Speed | ~2 req/sec | **Instant (local Parquet)** |
+
+## Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/kyusik-yang/korean-bill-lifecycle.git
+cd korean-bill-lifecycle
+
+# Install (editable mode for development)
+pip install -e .
+
+# Verify
+kna --help
+```
+
+## Quick start
+
+### Database overview
+
+```bash
+kna info
+```
+
+```
+         Korean National Assembly Database
+┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━┓
+┃ Assembly           ┃    Bills ┃  Enacted ┃  Cols ┃
+┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━┩
+│ 17th (2004-08)     │    8,369 │    2,547 │    49 │
+│ 18th (2008-12)     │   14,762 │    2,930 │    49 │
+│ ...                │          │          │       │
+│ 22nd (2024-)       │   17,205 │    1,399 │    54 │
+├────────────────────┼──────────┼──────────┼───────┤
+│ Total              │  110,778 │   17,638 │       │
+└────────────────────┴──────────┴──────────┴───────┘
+
+  Roll call votes    2,425,113  (16-22nd)
+  Ideal points             936  (20-22nd, DW-NOMINATE)
+  Committee mtgs       572,127  (17-22nd)
+  Bill texts            60,925  (20-22nd, propose-reason)
+```
+
+### Search bills by title
+
+```bash
+# Keyword search
+kna search "인공지능" --age 22
+
+# Combine filters
+kna search "부동산" --age 22 --status enacted --committee 국토
+
+# By proposer
+kna search "형법" --proposer 박범계 --age 21 -n 30
+```
+
+**Filter options:**
+
+| Option | Description | Values |
+|---|---|---|
+| `--age` | Assembly number | 17-22 |
+| `--committee` | Committee name (partial match) | e.g. `과방`, `국토` |
+| `--proposer` | Lead proposer name | e.g. `김영식` |
+| `--status` | Status group | `passed`, `enacted`, `pending`, `rejected` |
+| `--kind` | Bill type | `법률안`, `결의안`, `동의안` |
+| `--from` / `--to` | Proposal date range | YYYY-MM-DD |
+| `-n` | Max results (default 20) | integer |
+
+### Search propose-reason texts
+
+`search` queries bill **titles**. `text` searches within the full **propose-reason text** (제안이유) - the substantive rationale behind each bill.
+
+```bash
+# Find bills mentioning climate change in their rationale
+kna text "기후변화" --age 22
+
+# Find bills discussing AI regulation rationale
+kna text "인공지능 규제" -n 10
+```
+
+This covers 60,925 bills (20-22nd Assembly, 99.4% text coverage).
+
+## Bill lifecycle timeline
+
+The "killer feature" of `kna` - see any bill's full journey through the legislative process:
+
+```bash
+kna show 2217673
+```
+
+```
+╭──────────────────────────────────────────────╮
+│  약사법 일부개정법률안                          │
+│                                              │
+│  bill_no      2217673                        │
+│  assembly     22nd                           │
+│  proposer     김종민 (의원) 등 10인             │
+│  committee    보건복지위원회                    │
+│  status       원안가결                         │
+│                                              │
+│  LIFECYCLE              date    days          │
+│  ● 발의         2024-09-12       -            │
+│  ● 소관위 회부   2024-09-13      +1            │
+│  ● 소관위 상정   2024-11-20     +69            │
+│  ● 소관위 처리   2025-01-15    +126            │
+│  ● 법사위 회부   2025-01-20    +131            │
+│  ● 본회의 의결   2025-02-10    +152            │
+│  ● 공포         2025-03-01    +171            │
+│                                              │
+│  VOTE  찬성 245 / 반대 3 / 기권 12 (재석 260)  │
+│                                              │
+│  PROPOSE REASON                               │
+│  현행법상 약사법 제... (full text shown)        │
+╰──────────────────────────────────────────────╯
+```
+
+Each stage shows:
+
+- **●** reached (with date and days since proposal)
+- **○** not reached (bill did not advance to this stage)
+
+Lifecycle stages: 발의 → 소관위 회부 → 소관위 상정 → 소관위 처리 → 법사위 회부 → 본회의 의결 → 공포
+
+## Legislator profiles
+
+```bash
+kna legislator 이재명 --age 22
+```
+
+Shows:
+
+- **Party** and DW-NOMINATE **ideal point** (ideological position)
+- **Rank** within the assembly (← liberal ... conservative →)
+- **Bill record**: total led, enacted count, passage rate
+- **Top enacted bills** with dates
+
+```bash
+# Search by MONA code for exact match
+kna legislator --mona M2Q9024I --age 21
+```
+
+::: {.callout-note}
+DW-NOMINATE ideal points are available for the 20th-22nd Assembly only (936 legislator-terms). For the 17th-19th, bill record is shown without ideological positioning.
+:::
+
+## Aggregate statistics
+
+### Legislative funnel
+
+How many bills survive each stage of the legislative process?
+
+```bash
+kna stats funnel --age 22
+```
+
+```
+  22nd Assembly · Legislative Funnel (법률안 only)
+
+  Stage           Bills     Rate
+  발의           16,907   100.0%  ████████████████████
+  소관위 회부    16,071    95.1%  ███████████████████
+  소관위 상정    12,935    76.5%  ███████████████
+  소관위 처리     4,060    24.0%  █████
+  법사위 회부       510     3.0%  █
+  본회의 의결     4,431    26.2%  █████
+  공포            1,060     6.3%  █
+```
+
+### Passage rate trend
+
+```bash
+kna stats passage-rate
+```
+
+Shows the enacted rate declining from 25.6% (17th) to 6.6% (22nd) - legislative inflation at work.
+
+## Data export
+
+Extract filtered subsets for downstream analysis in R, Stata, or Python:
+
+```bash
+# Health committee bills, enacted only
+kna export health.csv --age 22 --committee 보건복지 --status enacted
+
+# All 22nd Assembly bills as Parquet
+kna export all_22.parquet --age 22
+
+# Government-proposed bills across all assemblies
+kna export gov.csv --kind 법률안
+```
+
+Format auto-detected from extension: `.csv`, `.parquet`, `.tsv`.
+
+## Using kna data in Python
+
+The `kna` package also works as a Python library:
+
+```python
+from kna.data import BillDB
+
+db = BillDB()
+
+# Load all 22nd Assembly bills
+bills = db.bills(age=22)
+print(f"{len(bills):,} bills, {len(bills.columns)} columns")
+
+# Load with column pruning (fast)
+df = db.bills(age=22, columns=["bill_id", "bill_nm", "status", "ppsl_dt"])
+
+# Ideal points
+ip = db.ideal_points()  # 936 legislator-terms, sign-flipped
+
+# Roll call votes
+votes = db.roll_calls(age=22)  # 383K member-level votes
+
+# Bill texts
+texts = db.bill_texts()  # 60K propose-reason texts
+```
+
+## Using kna data in R
+
+```r
+library(arrow)
+library(dplyr)
+
+# Load master bills
+master <- read_parquet("data/processed/master_bills_22.parquet")
+
+# All assemblies
+all_bills <- bind_rows(
+  lapply(17:22, function(age)
+    read_parquet(sprintf("data/processed/master_bills_%d.parquet", age)))
+)
+
+# Ideal points
+ip <- read.csv("data/processed/dw_ideal_points_20_22.csv") %>%
+  mutate(aligned = -aligned)  # flip: negative = liberal, positive = conservative
+
+# Bill texts
+texts <- read_parquet("data/processed/bill_texts_linked.parquet")
+```
+
+## Command reference
+
+| Command | Description |
+|---|---|
+| `kna info` | Database overview |
+| `kna search KEYWORD` | Search bill titles |
+| `kna text KEYWORD` | Search propose-reason texts |
+| `kna show BILL_NO` | Bill detail + lifecycle timeline |
+| `kna legislator NAME` | Legislator profile + ideal point |
+| `kna stats funnel` | Legislative funnel |
+| `kna stats passage-rate` | Cross-assembly passage rates |
+| `kna export PATH` | Export filtered bills to CSV/Parquet |
+
+## Companion data
+
+For hearing and audit transcripts (9.9M speech-level records), see the companion dataset:
+
+- [kr-hearings-data](https://github.com/kyusik-yang/kr-hearings-data) - Korean National Assembly hearing transcripts (2000-2025)

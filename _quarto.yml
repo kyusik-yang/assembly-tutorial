@@ -4,7 +4,7 @@ project:
 
 website:
   title: "Korean Legislative Data for Researchers"
-  description: "A practical guide to accessing Korean National Assembly data using the Open Assembly API and MCP"
+  description: "A practical guide to the Korean National Assembly data: Open API, kna CLI, and master database"
   favicon: images/favicon.ico
   navbar:
     left:
@@ -19,10 +19,16 @@ website:
       - href: 04-r.qmd
         text: "4. R"
       - href: 05-cases.qmd
-        text: "5. Research Cases"
+        text: "5. Cases"
+      - href: 06-kna.qmd
+        text: "6. kna CLI"
+      - href: 07-voting.qmd
+        text: "7. Voting"
+      - href: 08-network.qmd
+        text: "8. Networks"
     right:
       - icon: github
-        href: https://github.com/kyusik-yang/open-assembly-mcp
+        href: https://github.com/kyusik-yang/korean-bill-lifecycle
       - icon: box-arrow-up-right
         href: https://national-assembly-kr.streamlit.app
         text: "Live Demo"
@@ -38,9 +44,14 @@ website:
         contents:
           - 03-python.qmd
           - 04-r.qmd
+      - section: "Master Database & CLI"
+        contents:
+          - 06-kna.qmd
       - section: "Applied Research"
         contents:
           - 05-cases.qmd
+          - 07-voting.qmd
+          - 08-network.qmd
   page-footer:
     left: "Built with [Quarto](https://quarto.org) · Data from [열린국회정보](https://open.assembly.go.kr)"
     right: "Kyusik Yang · NYU Department of Politics"

@@ -15,13 +15,18 @@ Access bills, members, vote records, and committee data from the Korean National
 
 This tutorial shows researchers how to access the Korean National Assembly's **열린국회정보 Open API** — a free, official API covering every bill filed since the 18th Assembly (2008), full member rosters, plenary vote tallies, committee compositions, and co-sponsor networks.
 
-The tutorial covers three access modes:
+The tutorial covers four access modes:
 
 | Mode | Best for | Requires |
 |---|---|---|
 | **MCP + Claude** | Exploratory research, natural-language queries | API key + Claude Desktop |
 | **Python** | Data collection scripts, statistical analysis | API key + Python |
 | **R** | Regression, tidyverse-style analysis | API key + R |
+| **kna CLI** | Pre-built master database, instant offline queries | `pip install` only |
+
+::: {.callout-tip}
+**New to Korean legislative data?** Start with [Chapter 6: kna CLI](06-kna.qmd) for instant access to 110K bills, 2.4M roll-call votes, and DW-NOMINATE ideal points - no API key needed.
+:::
 
 ---
 

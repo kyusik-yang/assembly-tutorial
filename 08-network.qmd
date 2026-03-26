@@ -1,0 +1,268 @@
+---
+title: "Co-sponsorship Network Analysis"
+subtitle: "Graphs, centrality, community detection, and cross-party collaboration"
+---
+
+## Overview
+
+Co-sponsorship networks reveal the hidden structure of legislative coalitions. When legislators co-sign bills together, they signal policy alignment - and these signals aggregate into a network where clusters, bridges, and brokers become visible.
+
+**What you will build:**
+
+1. Co-sponsorship edge list from the Open Assembly API
+2. NetworkX graph with party-colored nodes
+3. Centrality measures (degree, betweenness, closeness)
+4. Community detection (Louvain algorithm)
+5. Cross-party collaboration index
+
+## Step 1: Build edge list
+
+```python
+import httpx
+import pandas as pd
+import time
+from itertools import combinations
+
+API_KEY = "YOUR_KEY"
+BASE = "https://open.assembly.go.kr/portal/openapi"
+
+def api_get(endpoint, **params):
+    params = {"KEY": API_KEY, "Type": "json", "pSize": 100, **params}
+    r = httpx.get(f"{BASE}/{endpoint}", params=params,
+                  headers={"User-Agent": "research-client"})
+    body = r.json()
+    rows = body.get(endpoint, [{}])
+    if isinstance(rows, dict):
+        return []
+    head = rows[0] if rows else {}
+    if "head" in head:
+        code = head["head"][1]["RESULT"]["CODE"]
+        if code != "INFO-000":
+            return []
+        return rows[1].get("row", [])
+    return []
+
+# Collect co-sponsors for bills on a topic
+bills = []
+for page in range(1, 20):
+    rows = api_get("nzmimeepazxkubdpn", AGE="22", BILL_NAME="환경", pIndex=page)
+    if not rows:
+        break
+    bills.extend(rows)
+    time.sleep(0.3)
+
+print(f"Bills found: {len(bills)}")
+
+# Get co-sponsors per bill
+edges = []
+for i, bill in enumerate(bills):
+    bill_id = bill["BILL_ID"]
+    sponsors = api_get("BILLINFOPPSR", BILL_ID=bill_id)
+    names = [s["PPSR_NM"] for s in sponsors if s.get("PPSR_NM")]
+
+    # Create pairwise edges
+    for a, b in combinations(sorted(set(names)), 2):
+        edges.append({"source": a, "target": b, "bill_id": bill_id})
+
+    if (i + 1) % 20 == 0:
+        print(f"  {i + 1}/{len(bills)} bills processed")
+    time.sleep(0.3)
+
+edge_df = pd.DataFrame(edges)
+print(f"Raw edges: {len(edge_df)}")
+```
+
+::: {.callout-tip}
+**Faster with kna:** The master database includes pre-built cosponsorship data:
+
+```python
+from kna.data import BillDB
+db = BillDB()
+edges = pd.read_parquet(db.data_dir / "cosponsorship_edges.parquet")
+# 769K edges, 661 unique members, instant
+```
+:::
+
+## Step 2: Build weighted graph
+
+```python
+import networkx as nx
+
+# Aggregate: weight = number of shared bills
+weighted = (
+    edge_df
+    .groupby(["source", "target"])
+    .size()
+    .reset_index(name="weight")
+)
+
+G = nx.from_pandas_edgelist(weighted, "source", "target", edge_attr="weight")
+print(f"Nodes: {G.number_of_nodes()}, Edges: {G.number_of_edges()}")
+print(f"Density: {nx.density(G):.4f}")
+```
+
+## Step 3: Add party attributes
+
+```python
+# Get member info for party labels
+members = api_get("nwvrqwxyaytdsfvhu", AGE="22", pSize=300)
+party_map = {m["HG_NM"]: m["POLY_NM"] for m in members if m.get("HG_NM")}
+
+for node in G.nodes():
+    G.nodes[node]["party"] = party_map.get(node, "unknown")
+
+# Party distribution
+from collections import Counter
+party_counts = Counter(nx.get_node_attributes(G, "party").values())
+print(pd.Series(party_counts).sort_values(ascending=False))
+```
+
+## Step 4: Centrality measures
+
+```python
+# Degree centrality: how many co-sponsors
+degree = nx.degree_centrality(G)
+
+# Weighted degree (strength): total co-sponsorship ties
+strength = {n: sum(d["weight"] for _, _, d in G.edges(n, data=True)) for n in G.nodes()}
+
+# Betweenness: who bridges communities
+betweenness = nx.betweenness_centrality(G, weight="weight")
+
+# Compile into DataFrame
+centrality = pd.DataFrame({
+    "name": list(G.nodes()),
+    "party": [G.nodes[n].get("party", "") for n in G.nodes()],
+    "degree": [degree[n] for n in G.nodes()],
+    "strength": [strength[n] for n in G.nodes()],
+    "betweenness": [betweenness[n] for n in G.nodes()],
+}).sort_values("betweenness", ascending=False)
+
+print("Top 10 brokers (betweenness centrality):")
+print(centrality.head(10)[["name", "party", "degree", "betweenness"]].to_string(index=False))
+```
+
+**Interpreting centrality:**
+
+| Measure | High value means |
+|---|---|
+| **Degree** | Co-sponsors with many different legislators |
+| **Strength** | Frequently co-sponsors (many shared bills) |
+| **Betweenness** | Bridges between otherwise disconnected groups |
+
+## Step 5: Community detection
+
+The Louvain algorithm finds densely connected subgroups:
+
+```python
+try:
+    from community import community_louvain
+    partition = community_louvain.best_partition(G, weight="weight")
+except ImportError:
+    # Fallback
+    communities = nx.community.greedy_modularity_communities(G, weight="weight")
+    partition = {}
+    for i, comm in enumerate(communities):
+        for node in comm:
+            partition[node] = i
+
+n_communities = len(set(partition.values()))
+modularity = nx.community.modularity(G,
+    [{n for n, c in partition.items() if c == i} for i in set(partition.values())],
+    weight="weight")
+
+print(f"Communities detected: {n_communities}")
+print(f"Modularity (Q): {modularity:.3f}")
+```
+
+::: {.callout-note}
+**Interpreting modularity:** Q > 0.3 suggests meaningful community structure. In Korean legislative networks, Q typically ranges 0.3-0.6, reflecting strong party-line clustering with some cross-party bridges.
+:::
+
+```python
+# Compare detected communities vs actual parties
+for node in G.nodes():
+    G.nodes[node]["community"] = partition[node]
+
+community_party = pd.DataFrame([
+    {"name": n, "party": G.nodes[n]["party"], "community": G.nodes[n]["community"]}
+    for n in G.nodes()
+])
+
+cross_tab = pd.crosstab(community_party["community"], community_party["party"])
+print(cross_tab)
+```
+
+## Step 6: Cross-party collaboration
+
+What fraction of a legislator's co-sponsorships are with members of other parties?
+
+```python
+def cross_party_rate(node, graph):
+    """Fraction of co-sponsors from different parties."""
+    my_party = graph.nodes[node].get("party", "")
+    neighbors = list(graph.neighbors(node))
+    if not neighbors:
+        return 0.0
+    cross = sum(1 for n in neighbors if graph.nodes[n].get("party", "") != my_party)
+    return cross / len(neighbors)
+
+centrality["cross_party"] = [cross_party_rate(n, G) for n in centrality["name"]]
+
+# Average cross-party rate by party
+print("\nCross-party collaboration by party:")
+print(centrality.groupby("party")["cross_party"].mean().sort_values(ascending=False).round(3))
+```
+
+## Visualization
+
+```python
+import plotly.graph_objects as go
+
+pos = nx.spring_layout(G, k=0.3, seed=42, weight="weight")
+
+PARTY_COLORS = {
+    "더불어민주당": "#004EA2", "국민의힘": "#E61E2B",
+    "조국혁신당": "#003764", "개혁신당": "#FF6B00",
+    "정의당": "#FFCC00", "무소속": "#999999",
+}
+
+node_x, node_y, node_color, node_text = [], [], [], []
+for node in G.nodes():
+    x, y = pos[node]
+    node_x.append(x)
+    node_y.append(y)
+    party = G.nodes[node].get("party", "")
+    node_color.append(PARTY_COLORS.get(party, "#999999"))
+    node_text.append(f"{node} ({party})<br>Degree: {degree[node]:.3f}")
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(
+    x=node_x, y=node_y, mode="markers",
+    marker=dict(size=8, color=node_color, opacity=0.8),
+    text=node_text, hoverinfo="text",
+))
+fig.update_layout(
+    title="Co-sponsorship Network",
+    showlegend=False, template="plotly_white",
+    xaxis=dict(showgrid=False, visible=False),
+    yaxis=dict(showgrid=False, visible=False),
+)
+fig.show()
+```
+
+## Export
+
+```python
+# Nodes with centrality
+centrality.to_csv("network_nodes.csv", index=False, encoding="utf-8-sig")
+
+# Weighted edges
+weighted.to_csv("network_edges.csv", index=False, encoding="utf-8-sig")
+```
+
+## References
+
+- Fowler, J. H. (2006). Connecting the Congress: A study of cosponsorship networks. *Political Analysis*, 14(4), 456-487.
+- Kirkland, J. H., & Gross, J. H. (2014). Measurement and theory in legislative networks. *Social Networks*, 36, 97-109.
+- Blondel, V. D., et al. (2008). Fast unfolding of communities in large networks. *Journal of Statistical Mechanics*, P10008.
