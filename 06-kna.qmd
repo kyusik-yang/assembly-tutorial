@@ -20,8 +20,8 @@ The `kna` (Korean National Assembly) CLI provides offline, instant access to a *
 
 ```bash
 # Clone the repo
-git clone https://github.com/kyusik-yang/korean-bill-lifecycle.git
-cd korean-bill-lifecycle
+git clone https://github.com/kyusik-yang/kna.git
+cd kna
 
 # Install (editable mode for development)
 pip install -e .

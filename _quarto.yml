@@ -30,7 +30,7 @@ website:
         text: "9. Ideology"
     right:
       - icon: github
-        href: https://github.com/kyusik-yang/korean-bill-lifecycle
+        href: https://github.com/kyusik-yang/kna
       - icon: box-arrow-up-right
         href: https://national-assembly-kr.streamlit.app
         text: "Live Demo"

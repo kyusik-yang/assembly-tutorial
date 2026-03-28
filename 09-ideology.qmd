@@ -17,7 +17,7 @@ The `kna` master database includes **936 DW-NOMINATE ideal point estimates** for
 4. Using ideal points as independent/dependent variables in regression
 
 ::: {.callout-tip}
-**Interactive explorer:** See all 936 legislator-terms on an interactive scatterplot at [Uijeong Jido 의정지도](https://kyusik-yang.github.io/korean-bill-lifecycle/voteview.html).
+**Interactive explorer:** See all 936 legislator-terms on an interactive scatterplot at [Uijeong Jido 의정지도](https://kyusik-yang.github.io/kna/voteview.html).
 :::
 
 ## Why DW-NOMINATE for Korea?
@@ -271,4 +271,4 @@ result <- wnominate(rc, dims = 2, polarity = c(1, 1))
 
 Explore all 936 legislator-terms interactively:
 
-- [Uijeong Jido 의정지도](https://kyusik-yang.github.io/korean-bill-lifecycle/voteview.html) - scatter plot with party colors, search, and polarization trend
+- [Uijeong Jido 의정지도](https://kyusik-yang.github.io/kna/voteview.html) - scatter plot with party colors, search, and polarization trend
