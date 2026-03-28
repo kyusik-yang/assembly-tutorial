@@ -172,7 +172,7 @@
     "href": "06-kna.html#installation",
     "title": "The kna CLI: Master Database",
     "section": "Installation",
-    "text": "Installation\n# Clone the repo\ngit clone https://github.com/kyusik-yang/korean-bill-lifecycle.git\ncd korean-bill-lifecycle\n\n# Install (editable mode for development)\npip install -e .\n\n# Verify\nkna --help"
+    "text": "Installation\n# Clone the repo\ngit clone https://github.com/kyusik-yang/kna.git\ncd kna\n\n# Install (editable mode for development)\npip install -e .\n\n# Verify\nkna --help"
   },
   {
     "objectID": "06-kna.html#quick-start",
