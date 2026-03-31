@@ -90,20 +90,20 @@ kna info
 
 ```bash
 # Keyword search
-kna search "인공지능" --age 22
+kna search "인공지능" --assembly 22
 
 # Combine filters
-kna search "부동산" --age 22 --status enacted --committee 국토
+kna search "부동산" --assembly 22 --status enacted --committee 국토
 
 # By proposer
-kna search "형법" --proposer 박범계 --age 21 -n 30
+kna search "형법" --proposer 박범계 --assembly 21 -n 30
 ```
 
 **Filter options:**
 
 | Option | Description | Values |
 |---|---|---|
-| `--age` | Assembly number | 17-22 |
+| `--assembly` | Assembly number | 17-22 |
 | `--committee` | Committee name (partial match) | e.g. `과방`, `국토` |
 | `--proposer` | Lead proposer name | e.g. `김영식` |
 | `--status` | Status group | `passed`, `enacted`, `pending`, `rejected` |
@@ -117,7 +117,7 @@ kna search "형법" --proposer 박범계 --age 21 -n 30
 
 ```bash
 # Find bills mentioning climate change in their rationale
-kna text "기후변화" --age 22
+kna text "기후변화" --assembly 22
 
 # Find bills discussing AI regulation rationale
 kna text "인공지능 규제" -n 10
@@ -169,7 +169,7 @@ Lifecycle stages: 발의 → 소관위 회부 → 소관위 상정 → 소관위
 ## Legislator profiles
 
 ```bash
-kna legislator 이재명 --age 22
+kna legislator 이재명 --assembly 22
 ```
 
 Shows:
@@ -181,7 +181,7 @@ Shows:
 
 ```bash
 # Search by MONA code for exact match
-kna legislator --mona M2Q9024I --age 21
+kna legislator --mona M2Q9024I --assembly 21
 ```
 
 ::: {.callout-note}
@@ -195,7 +195,7 @@ DW-NOMINATE ideal points are available for the 20th-22nd Assembly only (936 legi
 How many bills survive each stage of the legislative process?
 
 ```bash
-kna stats funnel --age 22
+kna stats funnel --assembly 22
 ```
 
 ```
@@ -225,10 +225,10 @@ Extract filtered subsets for downstream analysis in R, Stata, or Python:
 
 ```bash
 # Health committee bills, enacted only
-kna export health.csv --age 22 --committee 보건복지 --status enacted
+kna export health.csv --assembly 22 --committee 보건복지 --status enacted
 
 # All 22nd Assembly bills as Parquet
-kna export all_22.parquet --age 22
+kna export all_22.parquet --assembly 22
 
 # Government-proposed bills across all assemblies
 kna export gov.csv --kind 법률안

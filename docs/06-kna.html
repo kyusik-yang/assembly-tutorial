@@ -463,13 +463,13 @@ Warning
 <section id="search-bills-by-title" class="level3">
 <h3 class="anchored" data-anchor-id="search-bills-by-title">Search bills by title</h3>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keyword search</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> search <span class="st">"인공지능"</span> <span class="at">--age</span> 22</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> search <span class="st">"인공지능"</span> <span class="at">--assembly</span> 22</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine filters</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> search <span class="st">"부동산"</span> <span class="at">--age</span> 22 <span class="at">--status</span> enacted <span class="at">--committee</span> 국토</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> search <span class="st">"부동산"</span> <span class="at">--assembly</span> 22 <span class="at">--status</span> enacted <span class="at">--committee</span> 국토</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># By proposer</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> search <span class="st">"형법"</span> <span class="at">--proposer</span> 박범계 <span class="at">--age</span> 21 <span class="at">-n</span> 30</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> search <span class="st">"형법"</span> <span class="at">--proposer</span> 박범계 <span class="at">--assembly</span> 21 <span class="at">-n</span> 30</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><strong>Filter options:</strong></p>
 <table class="table">
 <colgroup>
@@ -486,7 +486,7 @@ Warning
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>--age</code></td>
+<td><code>--assembly</code></td>
 <td>Assembly number</td>
 <td>17-22</td>
 </tr>
@@ -527,7 +527,7 @@ Warning
 <h3 class="anchored" data-anchor-id="search-propose-reason-texts">Search propose-reason texts</h3>
 <p><code>search</code> queries bill <strong>titles</strong>. <code>text</code> searches within the full <strong>propose-reason text</strong> (제안이유) - the substantive rationale behind each bill.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find bills mentioning climate change in their rationale</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> text <span class="st">"기후변화"</span> <span class="at">--age</span> 22</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> text <span class="st">"기후변화"</span> <span class="at">--assembly</span> 22</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find bills discussing AI regulation rationale</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> text <span class="st">"인공지능 규제"</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -570,7 +570,7 @@ Warning
 </section>
 <section id="legislator-profiles" class="level2">
 <h2 class="anchored" data-anchor-id="legislator-profiles">Legislator profiles</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> legislator 이재명 <span class="at">--age</span> 22</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> legislator 이재명 <span class="at">--assembly</span> 22</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Shows:</p>
 <ul>
 <li><strong>Party</strong> and DW-NOMINATE <strong>ideal point</strong> (ideological position)</li>
@@ -579,7 +579,7 @@ Warning
 <li><strong>Top enacted bills</strong> with dates</li>
 </ul>
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Search by MONA code for exact match</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> legislator <span class="at">--mona</span> M2Q9024I <span class="at">--age</span> 21</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> legislator <span class="at">--mona</span> M2Q9024I <span class="at">--assembly</span> 21</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -599,7 +599,7 @@ Note
 <section id="legislative-funnel" class="level3">
 <h3 class="anchored" data-anchor-id="legislative-funnel">Legislative funnel</h3>
 <p>How many bills survive each stage of the legislative process?</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> stats funnel <span class="at">--age</span> 22</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> stats funnel <span class="at">--assembly</span> 22</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>  22nd Assembly · Legislative Funnel (법률안 only)
 
   Stage           Bills     Rate
@@ -621,10 +621,10 @@ Note
 <h2 class="anchored" data-anchor-id="data-export">Data export</h2>
 <p>Extract filtered subsets for downstream analysis in R, Stata, or Python:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Health committee bills, enacted only</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> export health.csv <span class="at">--age</span> 22 <span class="at">--committee</span> 보건복지 <span class="at">--status</span> enacted</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> export health.csv <span class="at">--assembly</span> 22 <span class="at">--committee</span> 보건복지 <span class="at">--status</span> enacted</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># All 22nd Assembly bills as Parquet</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> export all_22.parquet <span class="at">--age</span> 22</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> export all_22.parquet <span class="at">--assembly</span> 22</span>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Government-proposed bills across all assemblies</span></span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> export gov.csv <span class="at">--kind</span> 법률안</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

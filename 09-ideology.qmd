@@ -94,7 +94,7 @@ ip %>%
 
 ```bash
 # Quick lookup
-kna legislator 이재명 --age 22
+kna legislator 이재명 --assembly 22
 #   ideal point   -0.366 (DW-NOMINATE)
 #   rank          103 / 304 (← 진보 ··· 보수 →)
 
