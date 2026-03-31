@@ -643,26 +643,26 @@ Note
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> BillDB()</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load all 22nd Assembly bills</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>bills <span class="op">=</span> db.bills(age<span class="op">=</span><span class="dv">22</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>bills <span class="op">=</span> db.bills(assembly<span class="op">=</span><span class="dv">22</span>)</span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="bu">len</span>(bills)<span class="sc">:,}</span><span class="ss"> bills, </span><span class="sc">{</span><span class="bu">len</span>(bills.columns)<span class="sc">}</span><span class="ss"> columns"</span>)</span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Load with column pruning (fast)</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> db.bills(age<span class="op">=</span><span class="dv">22</span>, columns<span class="op">=</span>[<span class="st">"bill_id"</span>, <span class="st">"bill_nm"</span>, <span class="st">"status"</span>, <span class="st">"ppsl_dt"</span>])</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> db.bills(assembly<span class="op">=</span><span class="dv">22</span>, columns<span class="op">=</span>[<span class="st">"bill_id"</span>, <span class="st">"bill_nm"</span>, <span class="st">"status"</span>, <span class="st">"ppsl_dt"</span>])</span>
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Ideal points</span></span>
 <span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>ip <span class="op">=</span> db.ideal_points()  <span class="co"># 936 legislator-terms, sign-flipped</span></span>
 <span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Roll call votes</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>votes <span class="op">=</span> db.roll_calls(age<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 383K member-level votes</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>votes <span class="op">=</span> db.roll_calls(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 383K member-level votes</span></span>
 <span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Bill texts</span></span>
 <span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>texts <span class="op">=</span> db.bill_texts()  <span class="co"># 60K propose-reason texts</span></span>
 <span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Member metadata (party, district, committee, gender, birth date)</span></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>members <span class="op">=</span> db.members(age<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 306 members</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>members <span class="op">=</span> db.members(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 306 members</span></span>
 <span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Committee meetings</span></span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>meetings <span class="op">=</span> db.committee_meetings(age<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 108K records</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>meetings <span class="op">=</span> db.committee_meetings(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 108K records</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="using-kna-data-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="using-kna-data-in-r">Using kna data in R</h2>

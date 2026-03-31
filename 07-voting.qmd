@@ -91,7 +91,7 @@ print(f"Roll-call panel: {len(panel)} member-vote records")
 ```python
 from kna.data import BillDB
 db = BillDB()
-panel = db.roll_calls(age=22)  # 383K records, instant
+panel = db.roll_calls(assembly=22)  # 383K records, instant
 ```
 :::
 
