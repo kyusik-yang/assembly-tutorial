@@ -18,16 +18,45 @@ The `kna` (Korean National Assembly) CLI provides offline, instant access to a *
 
 ## Installation
 
+### Step 1: Install the CLI
+
 ```bash
-# Clone the repo
+pip install kna
+```
+
+Or use `pipx install kna` which handles PATH automatically.
+
+### Step 2: Get the data
+
+The CLI needs processed Parquet data files hosted via **Git LFS**:
+
+```bash
+# Install Git LFS (one-time)
+brew install git-lfs    # macOS
+# or: sudo apt install git-lfs    # Ubuntu/Debian
+
+git lfs install
+
+# Clone with data
 git clone https://github.com/kyusik-yang/kna.git
 cd kna
+```
 
-# Install (editable mode for development)
-pip install -e .
+::: {.callout-warning}
+If you already cloned without LFS, parquet files will be tiny pointer files and `kna info` will fail. Fix with: `git lfs install && git lfs pull`
+:::
+
+### Step 3: Point the CLI to the data
+
+```bash
+export KBL_DATA=~/kna/data/processed
+
+# Make it permanent
+echo 'export KBL_DATA="$HOME/kna/data/processed"' >> ~/.zshrc
+source ~/.zshrc
 
 # Verify
-kna --help
+kna info
 ```
 
 ## Quick start
@@ -231,6 +260,12 @@ votes = db.roll_calls(age=22)  # 383K member-level votes
 
 # Bill texts
 texts = db.bill_texts()  # 60K propose-reason texts
+
+# Committee meetings
+meetings = db.committee_meetings(age=22)  # 108K records
+
+# Legislator ID mapping
+mapping = db.legislator_map()  # MONA_CD → name/party
 ```
 
 ## Using kna data in R

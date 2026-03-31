@@ -304,7 +304,7 @@ Claude → gives you a summary             ↓
 <tbody>
 <tr class="odd">
 <td><code>search_bills</code></td>
-<td>Search bills by assembly, keyword, proposer, committee, or outcome</td>
+<td>Search member-sponsored bills by assembly, keyword, proposer, committee, or outcome</td>
 </tr>
 <tr class="even">
 <td><code>get_bill_detail</code></td>
@@ -312,7 +312,7 @@ Claude → gives you a summary             ↓
 </tr>
 <tr class="odd">
 <td><code>get_member_info</code></td>
-<td>Member roster by party, district, or committee</td>
+<td>Member roster by party, district, or committee (16th-22nd)</td>
 </tr>
 <tr class="even">
 <td><code>get_vote_results</code></td>
@@ -327,8 +327,28 @@ Claude → gives you a summary             ↓
 <td>All co-sponsors for a given bill</td>
 </tr>
 <tr class="odd">
+<td><code>get_member_votes</code></td>
+<td>Per-member voting records for a specific bill</td>
+</tr>
+<tr class="even">
 <td><code>get_committee_members</code></td>
 <td>Members of a specific committee</td>
+</tr>
+<tr class="odd">
+<td><code>get_pending_bills</code></td>
+<td>Currently unresolved (계류) bills</td>
+</tr>
+<tr class="even">
+<td><code>get_plenary_agenda</code></td>
+<td>Upcoming plenary session agenda items</td>
+</tr>
+<tr class="odd">
+<td><code>get_bill_committee_review</code></td>
+<td>Committee meeting records for a bill</td>
+</tr>
+<tr class="even">
+<td><code>get_bill_summary</code></td>
+<td>All-in-one convenience tool: detail + review + proposers + committee meetings</td>
 </tr>
 </tbody>
 </table>
@@ -341,7 +361,7 @@ Claude → gives you a summary             ↓
 <blockquote class="blockquote">
 <p>“22대 국회에서 발의된 인공지능 관련 법률안 목록을 알려줘. 처리결과도 포함해서.”</p>
 </blockquote>
-<p>Claude will call <code>search_bills(age="22", bill_name="인공지능")</code> and return a formatted list.</p>
+<p>Claude will call <code>search_bills(assembly="22", bill_name="인공지능")</code> and return a formatted list.</p>
 <hr>
 </section>
 <section id="chained-query-bill-proposers-party" class="level3">
@@ -362,7 +382,7 @@ Claude → gives you a summary             ↓
 <blockquote class="blockquote">
 <p>“22대 국회에서 부결된 법안 10개를 찾고, 찬성과 반대 표 차이가 가장 작았던 것부터 정렬해줘.”</p>
 </blockquote>
-<p>Claude calls <code>get_vote_results(age="22")</code>, filters for <code>PROC_RESULT_CD == "부결"</code>, and sorts by the margin.</p>
+<p>Claude calls <code>get_vote_results(assembly="22")</code>, filters for <code>PROC_RESULT_CD == "부결"</code>, and sorts by the margin.</p>
 <hr>
 </section>
 <section id="committee-composition" class="level3">
@@ -370,7 +390,7 @@ Claude → gives you a summary             ↓
 <blockquote class="blockquote">
 <p>“법제사법위원회 위원 명단을 가져오고 정당별로 몇 명인지 세어줘.”</p>
 </blockquote>
-<p>Claude calls <code>get_committee_members(committee="법제사법위원회")</code> and aggregates by party.</p>
+<p>Claude calls <code>get_committee_members(assembly="22", committee="법제사법위원회")</code> and aggregates by party.</p>
 <hr>
 </section>
 </section>
@@ -386,7 +406,7 @@ Be specific about the assembly term
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Always include the assembly number (대수) in your query. The API covers the 18th–22nd assemblies. “22대” = 22nd National Assembly (2024–present).</p>
+<p>Always include the assembly number (대수) in your query. The API covers the 16th-22nd assemblies. “22대” = 22nd National Assembly (2024-present).</p>
 </div>
 </div>
 <div class="callout-tip callout callout-style-default callout-captioned">
@@ -412,7 +432,7 @@ What MCP cannot do (yet)
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Committee transcripts (회의록), citizen petitions (청원), and bill full-text rationale (제안이유) are distributed as file downloads only — no Open API endpoint exists. For transcripts, use <a href="https://likms.assembly.go.kr/record/">likms.assembly.go.kr/record</a>.</p>
+<p>Committee transcripts (회의록) and citizen petitions (청원) are not available via the Open API. For transcripts, use <a href="https://github.com/kyusik-yang/kr-hearings-data">kr-hearings-data</a> (9.9M speech records) or <a href="https://likms.assembly.go.kr/record/">likms.assembly.go.kr/record</a>. For bill propose-reason texts (제안이유), use <a href="https://github.com/kyusik-yang/kna">kna</a> (60,925 bills, 20th-22nd).</p>
 </div>
 </div>
 <hr>

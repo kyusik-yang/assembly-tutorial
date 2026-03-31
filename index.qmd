@@ -13,7 +13,7 @@ Access bills, members, vote records, and committee data from the Korean National
 
 ## What is this tutorial?
 
-This tutorial shows researchers how to access the Korean National Assembly's **열린국회정보 Open API** — a free, official API covering every bill filed since the 18th Assembly (2008), full member rosters, plenary vote tallies, committee compositions, and co-sponsor networks.
+This tutorial shows researchers how to access the Korean National Assembly's **열린국회정보 Open API** — a free, official API covering bills from the 16th Assembly (2000) onward, full member rosters, plenary vote tallies, committee compositions, and co-sponsor networks.
 
 The tutorial covers four access modes:
 
@@ -36,7 +36,7 @@ The Korean National Assembly is one of the most data-rich legislatures in East A
 
 The 열린국회정보 API changes this. It provides:
 
-- **Bills**: every member-sponsored bill from the 18th–22nd assembly, with proposer names, committee assignments, dates, and outcomes
+- **Bills**: every member-sponsored bill from the 16th-22nd assembly, with proposer names, committee assignments, dates, and outcomes
 - **Vote records**: plenary yes/no/abstain tallies by bill
 - **Members**: party affiliation, district, committee membership, election history
 - **Co-sponsors**: full list of co-signatories per bill, enabling network analysis
