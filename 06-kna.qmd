@@ -13,6 +13,7 @@ The `kna` (Korean National Assembly) CLI provides offline, instant access to a *
 | Lifecycle timestamps | Requires chaining 4+ endpoints | **Single row per bill, 8 APIs merged** |
 | Roll call votes | Per-bill, rate-limited | **2.4M votes, instant** |
 | Member metadata | Per-query, current assembly only | **1,933 member-terms (17-22nd)** |
+| Asset disclosures | Not available | **2,928 member-year wealth rows** |
 | DW-NOMINATE | Not available | **936 legislator-terms** |
 | Propose-reason texts | Not available | **60K bill texts** |
 | Speed | ~2 req/sec | **Instant (local Parquet)** |
@@ -264,6 +265,9 @@ texts = db.bill_texts()  # 60K propose-reason texts
 
 # Member metadata (party, district, committee, gender, birth date)
 members = db.members(assembly=22)  # 306 members
+
+# Asset disclosures (net_worth, real estate, stocks, etc. in 천원)
+assets = db.assets(assembly=22)  # 299 member-year wealth rows
 
 # Committee meetings
 meetings = db.committee_meetings(assembly=22)  # 108K records
