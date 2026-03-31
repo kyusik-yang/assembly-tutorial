@@ -362,7 +362,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tbody>
 <tr class="odd">
 <td>Bills</td>
-<td>18-22nd (per query)</td>
+<td>16-22nd (per query)</td>
 <td><strong>17-22nd (110K pre-loaded)</strong></td>
 </tr>
 <tr class="even">
@@ -376,16 +376,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td><strong>2.4M votes, instant</strong></td>
 </tr>
 <tr class="even">
+<td>Member metadata</td>
+<td>Per-query, current assembly only</td>
+<td><strong>1,933 member-terms (17-22nd)</strong></td>
+</tr>
+<tr class="odd">
 <td>DW-NOMINATE</td>
 <td>Not available</td>
 <td><strong>936 legislator-terms</strong></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Propose-reason texts</td>
 <td>Not available</td>
 <td><strong>60K bill texts</strong></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Speed</td>
 <td>~2 req/sec</td>
 <td><strong>Instant (local Parquet)</strong></td>
@@ -653,11 +658,11 @@ Note
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Bill texts</span></span>
 <span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>texts <span class="op">=</span> db.bill_texts()  <span class="co"># 60K propose-reason texts</span></span>
 <span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Committee meetings</span></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>meetings <span class="op">=</span> db.committee_meetings(age<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 108K records</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Member metadata (party, district, committee, gender, birth date)</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>members <span class="op">=</span> db.members(age<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 306 members</span></span>
 <span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Legislator ID mapping</span></span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>mapping <span class="op">=</span> db.legislator_map()  <span class="co"># MONA_CD → name/party</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Committee meetings</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>meetings <span class="op">=</span> db.committee_meetings(age<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 108K records</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="using-kna-data-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="using-kna-data-in-r">Using kna data in R</h2>

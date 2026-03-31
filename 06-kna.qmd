@@ -9,9 +9,10 @@ The `kna` (Korean National Assembly) CLI provides offline, instant access to a *
 
 | Feature | Live API (Ch 3-4) | **kna CLI** |
 |---|---|---|
-| Bills | 18-22nd (per query) | **17-22nd (110K pre-loaded)** |
+| Bills | 16-22nd (per query) | **17-22nd (110K pre-loaded)** |
 | Lifecycle timestamps | Requires chaining 4+ endpoints | **Single row per bill, 8 APIs merged** |
 | Roll call votes | Per-bill, rate-limited | **2.4M votes, instant** |
+| Member metadata | Per-query, current assembly only | **1,933 member-terms (17-22nd)** |
 | DW-NOMINATE | Not available | **936 legislator-terms** |
 | Propose-reason texts | Not available | **60K bill texts** |
 | Speed | ~2 req/sec | **Instant (local Parquet)** |
@@ -261,11 +262,11 @@ votes = db.roll_calls(age=22)  # 383K member-level votes
 # Bill texts
 texts = db.bill_texts()  # 60K propose-reason texts
 
+# Member metadata (party, district, committee, gender, birth date)
+members = db.members(age=22)  # 306 members
+
 # Committee meetings
 meetings = db.committee_meetings(age=22)  # 108K records
-
-# Legislator ID mapping
-mapping = db.legislator_map()  # MONA_CD → name/party
 ```
 
 ## Using kna data in R
