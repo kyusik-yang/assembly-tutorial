@@ -282,7 +282,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-ideology.html" class="sidebar-item-text sidebar-link">DW-NOMINATE &amp; Ideological Positioning</a>
+  <a href="./09-ideology.html" class="sidebar-item-text sidebar-link">Ideal Points &amp; Ideological Positioning</a>
   </div>
 </li>
       </ul>
@@ -349,35 +349,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>BASE <span class="op">=</span> <span class="st">"https://open.assembly.go.kr/portal/openapi"</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> api_get(endpoint, <span class="op">**</span>params):</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Single API call with pagination support."""</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""One page of results. Raises on API errors instead of returning []."""</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> {<span class="st">"KEY"</span>: API_KEY, <span class="st">"Type"</span>: <span class="st">"json"</span>, <span class="st">"pSize"</span>: <span class="dv">100</span>, <span class="op">**</span>params}</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> httpx.get(<span class="ss">f"</span><span class="sc">{</span>BASE<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>endpoint<span class="sc">}</span><span class="ss">"</span>, params<span class="op">=</span>params,</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                  headers<span class="op">=</span>{<span class="st">"User-Agent"</span>: <span class="st">"research-client"</span>})</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    body <span class="op">=</span> r.json()</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> body.get(endpoint, [{}])</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(rows, <span class="bu">dict</span>):</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> []</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    head <span class="op">=</span> rows[<span class="dv">0</span>] <span class="cf">if</span> rows <span class="cf">else</span> {}</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"head"</span> <span class="kw">in</span> head:</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        code <span class="op">=</span> head[<span class="st">"head"</span>][<span class="dv">1</span>][<span class="st">"RESULT"</span>][<span class="st">"CODE"</span>]</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> code <span class="op">!=</span> <span class="st">"INFO-000"</span>:</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> []</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> rows[<span class="dv">1</span>].get(<span class="st">"row"</span>, [])</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> []</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Get bills with vote records (22nd Assembly)</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>voted_bills <span class="op">=</span> []</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>page <span class="op">=</span> <span class="dv">1</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="va">True</span>:</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> api_get(<span class="st">"ncocpgfiaoituanbr"</span>, AGE<span class="op">=</span><span class="st">"22"</span>, pIndex<span class="op">=</span>page)</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> rows:</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    voted_bills.extend(rows)</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    page <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">0.3</span>)</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>df_votes <span class="op">=</span> pd.DataFrame(voted_bills)</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Bills with vote tallies: </span><span class="sc">{</span><span class="bu">len</span>(df_votes)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    r.raise_for_status()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    body <span class="op">=</span> r.json()</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> endpoint <span class="kw">not</span> <span class="kw">in</span> body:</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Errors come back as HTTP 200 with a top-level RESULT object.</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># INFO-200 means no data, e.g. a page past the last one.</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> body.get(<span class="st">"RESULT"</span>, {})</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> result.get(<span class="st">"CODE"</span>) <span class="op">==</span> <span class="st">"INFO-200"</span>:</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> []</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="ss">f"</span><span class="sc">{</span>endpoint<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>result<span class="sc">.</span>get(<span class="st">'CODE'</span>)<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>result<span class="sc">.</span>get(<span class="st">'MESSAGE'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    head <span class="op">=</span> body[endpoint][<span class="dv">0</span>][<span class="st">"head"</span>]</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    code <span class="op">=</span> head[<span class="dv">1</span>][<span class="st">"RESULT"</span>][<span class="st">"CODE"</span>]</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> code <span class="op">!=</span> <span class="st">"INFO-000"</span>:</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="ss">f"</span><span class="sc">{</span>endpoint<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>code<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>head[<span class="dv">1</span>][<span class="st">'RESULT'</span>]<span class="sc">.</span>get(<span class="st">'MESSAGE'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> body[endpoint][<span class="dv">1</span>].get(<span class="st">"row"</span>, []) <span class="cf">if</span> <span class="bu">len</span>(body[endpoint]) <span class="op">&gt;</span> <span class="dv">1</span> <span class="cf">else</span> []</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [rows] <span class="cf">if</span> <span class="bu">isinstance</span>(rows, <span class="bu">dict</span>) <span class="cf">else</span> rows</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Get bills with vote records (22nd Assembly)</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>voted_bills <span class="op">=</span> []</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>page <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> api_get(<span class="st">"ncocpgfiaoituanbr"</span>, AGE<span class="op">=</span><span class="st">"22"</span>, pIndex<span class="op">=</span>page)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> rows:</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    voted_bills.extend(rows)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    page <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">0.3</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>df_votes <span class="op">=</span> pd.DataFrame(voted_bills)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Bills with vote tallies: </span><span class="sc">{</span><span class="bu">len</span>(df_votes)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="step-2-collect-member-level-roll-calls" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-collect-member-level-roll-calls">Step 2: Collect member-level roll calls</h2>
@@ -416,7 +420,11 @@ Tip
 <p><strong>Faster alternative:</strong> If you have the <code>kna</code> CLI installed (see <a href="./06-kna.html">Chapter 6</a>), you can skip API collection entirely:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> kna.data <span class="im">import</span> BillDB</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> BillDB()</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>panel <span class="op">=</span> db.roll_calls(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 383K records, instant</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>panel <span class="op">=</span> db.roll_calls(assembly<span class="op">=</span><span class="dv">22</span>).rename(columns<span class="op">=</span>{</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bill_id"</span>: <span class="st">"BILL_ID"</span>, <span class="st">"member_id"</span>: <span class="st">"MONA_CD"</span>, <span class="st">"member_name"</span>: <span class="st">"HG_NM"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"vote"</span>: <span class="st">"RESULT_VOTE_MOD"</span>, <span class="st">"party_api"</span>: <span class="st">"POLY_NM"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>})  <span class="co"># 545,107 records, instant, with the API's column names used below</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The API’s <code>POLY_NM</code> is each member’s party at the time of the query, written onto every past vote. kna keeps it as <code>party_api</code>, and its <code>party</code> column holds the party at election, the party whose list or ticket the member was elected on. To group by the party at election instead, rename <code>party</code> rather than <code>party_api</code> to <code>POLY_NM</code>. It keeps the satellite list parties 더불어민주연합 and 국민의미래 apart from 더불어민주당 and 국민의힘.</p>
 </div>
 </div>
 </section>
@@ -437,7 +445,7 @@ Tip
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute per party-bill</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>rice <span class="op">=</span> (</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    panel</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"BILL_ID"</span>, <span class="st">"HG_NM_PARTY"</span>])  <span class="co"># party field name may vary</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"BILL_ID"</span>, <span class="st">"POLY_NM"</span>])  <span class="co"># POLY_NM = party label</span></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(rice_index)</span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">"rice"</span>)</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -445,7 +453,7 @@ Tip
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Average Rice index by party</span></span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>rice_by_party <span class="op">=</span> (</span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    rice</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"HG_NM_PARTY"</span>)[<span class="st">"rice"</span>]</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"POLY_NM"</span>)[<span class="st">"rice"</span>]</span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    .agg([<span class="st">"mean"</span>, <span class="st">"median"</span>, <span class="st">"count"</span>])</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">"mean"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -463,13 +471,13 @@ Tip
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Get majority position per party per bill</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>majorities <span class="op">=</span> (</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    panel</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"BILL_ID"</span>, <span class="st">"HG_NM_PARTY"</span>])</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"BILL_ID"</span>, <span class="st">"POLY_NM"</span>])</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(party_majority)</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    .reset_index(name<span class="op">=</span><span class="st">"party_line"</span>)</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Join back to individual votes</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>panel_with_line <span class="op">=</span> panel.merge(majorities, on<span class="op">=</span>[<span class="st">"BILL_ID"</span>, <span class="st">"HG_NM_PARTY"</span>])</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>panel_with_line <span class="op">=</span> panel.merge(majorities, on<span class="op">=</span>[<span class="st">"BILL_ID"</span>, <span class="st">"POLY_NM"</span>])</span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Flag defections (voted, but against party line)</span></span>
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>panel_with_line[<span class="st">"defected"</span>] <span class="op">=</span> (</span>
@@ -480,7 +488,7 @@ Tip
 <span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Top defectors</span></span>
 <span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>defectors <span class="op">=</span> (</span>
 <span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    panel_with_line</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    .groupby(<span class="st">"HG_NM"</span>)[<span class="st">"defected"</span>]</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"MONA_CD"</span>, <span class="st">"HG_NM"</span>])[<span class="st">"defected"</span>]  <span class="co"># MONA_CD: names repeat</span></span>
 <span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    .agg([<span class="st">"sum"</span>, <span class="st">"count"</span>])</span>
 <span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    .assign(rate<span class="op">=</span><span class="kw">lambda</span> d: d[<span class="st">"sum"</span>] <span class="op">/</span> d[<span class="st">"count"</span>] <span class="op">*</span> <span class="dv">100</span>)</span>
 <span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">"sum"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
@@ -494,7 +502,7 @@ Tip
 <div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pivot: party majority per bill</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pivot <span class="op">=</span> (</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    majorities</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    .pivot_table(index<span class="op">=</span><span class="st">"BILL_ID"</span>, columns<span class="op">=</span><span class="st">"HG_NM_PARTY"</span>, values<span class="op">=</span><span class="st">"party_line"</span>, aggfunc<span class="op">=</span><span class="st">"first"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    .pivot_table(index<span class="op">=</span><span class="st">"BILL_ID"</span>, columns<span class="op">=</span><span class="st">"POLY_NM"</span>, values<span class="op">=</span><span class="st">"party_line"</span>, aggfunc<span class="op">=</span><span class="st">"first"</span>)</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Contested = major parties split</span></span>
@@ -511,8 +519,22 @@ Tip
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>rice.to_csv(<span class="st">"rice_index.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The vote panel is ready for models like:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R: Party discipline as DV</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fixest)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">feols</span>(defected <span class="sc">~</span> seniority <span class="sc">+</span> margin <span class="sc">+</span> contested <span class="sc">|</span> party <span class="sc">+</span> session, <span class="at">data =</span> panel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fixest)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>panel <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"vote_panel.csv"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Member covariates from kna (path relative to the kna checkout).</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># term_number is the seniority at the 22nd Assembly (1 = 초선).</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># reelection is the lifetime count at collection, not seniority then.</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>members <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data/processed/members_22.parquet"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">MONA_CD =</span> mona_cd, term_number,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">pr_elected =</span> election_type <span class="sc">==</span> <span class="st">"비례대표"</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>panel <span class="ot">&lt;-</span> panel <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(members, <span class="at">by =</span> <span class="st">"MONA_CD"</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">feols</span>(defected <span class="sc">~</span> term_number <span class="sc">+</span> pr_elected <span class="sc">|</span> POLY_NM <span class="sc">+</span> BILL_ID, <span class="at">data =</span> panel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>

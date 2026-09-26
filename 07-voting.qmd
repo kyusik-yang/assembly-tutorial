@@ -26,21 +26,25 @@ API_KEY = "YOUR_KEY"
 BASE = "https://open.assembly.go.kr/portal/openapi"
 
 def api_get(endpoint, **params):
-    """Single API call with pagination support."""
+    """One page of results. Raises on API errors instead of returning []."""
     params = {"KEY": API_KEY, "Type": "json", "pSize": 100, **params}
     r = httpx.get(f"{BASE}/{endpoint}", params=params,
                   headers={"User-Agent": "research-client"})
+    r.raise_for_status()
     body = r.json()
-    rows = body.get(endpoint, [{}])
-    if isinstance(rows, dict):
-        return []
-    head = rows[0] if rows else {}
-    if "head" in head:
-        code = head["head"][1]["RESULT"]["CODE"]
-        if code != "INFO-000":
+    if endpoint not in body:
+        # Errors come back as HTTP 200 with a top-level RESULT object.
+        # INFO-200 means no data, e.g. a page past the last one.
+        result = body.get("RESULT", {})
+        if result.get("CODE") == "INFO-200":
             return []
-        return rows[1].get("row", [])
-    return []
+        raise RuntimeError(f"{endpoint}: {result.get('CODE')} {result.get('MESSAGE')}")
+    head = body[endpoint][0]["head"]
+    code = head[1]["RESULT"]["CODE"]
+    if code != "INFO-000":
+        raise RuntimeError(f"{endpoint}: {code} {head[1]['RESULT'].get('MESSAGE')}")
+    rows = body[endpoint][1].get("row", []) if len(body[endpoint]) > 1 else []
+    return [rows] if isinstance(rows, dict) else rows
 
 # Get bills with vote records (22nd Assembly)
 voted_bills = []
@@ -91,8 +95,13 @@ print(f"Roll-call panel: {len(panel)} member-vote records")
 ```python
 from kna.data import BillDB
 db = BillDB()
-panel = db.roll_calls(assembly=22)  # 383K records, instant
+panel = db.roll_calls(assembly=22).rename(columns={
+    "bill_id": "BILL_ID", "member_id": "MONA_CD", "member_name": "HG_NM",
+    "vote": "RESULT_VOTE_MOD", "party_api": "POLY_NM",
+})  # 545,107 records, instant, with the API's column names used below
 ```
+
+The API's `POLY_NM` is each member's party at the time of the query, written onto every past vote. kna keeps it as `party_api`, and its `party` column holds the party at election, the party whose list or ticket the member was elected on. To group by the party at election instead, rename `party` rather than `party_api` to `POLY_NM`. It keeps the satellite list parties 더불어민주연합 and 국민의미래 apart from 더불어민주당 and 국민의힘.
 :::
 
 ## Step 3: Rice index
@@ -116,7 +125,7 @@ def rice_index(group):
 # Compute per party-bill
 rice = (
     panel
-    .groupby(["BILL_ID", "HG_NM_PARTY"])  # party field name may vary
+    .groupby(["BILL_ID", "POLY_NM"])  # POLY_NM = party label
     .apply(rice_index)
     .reset_index(name="rice")
 )
@@ -124,7 +133,7 @@ rice = (
 # Average Rice index by party
 rice_by_party = (
     rice
-    .groupby("HG_NM_PARTY")["rice"]
+    .groupby("POLY_NM")["rice"]
     .agg(["mean", "median", "count"])
     .sort_values("mean", ascending=False)
 )
@@ -145,13 +154,13 @@ def party_majority(group):
 # Get majority position per party per bill
 majorities = (
     panel
-    .groupby(["BILL_ID", "HG_NM_PARTY"])
+    .groupby(["BILL_ID", "POLY_NM"])
     .apply(party_majority)
     .reset_index(name="party_line")
 )
 
 # Join back to individual votes
-panel_with_line = panel.merge(majorities, on=["BILL_ID", "HG_NM_PARTY"])
+panel_with_line = panel.merge(majorities, on=["BILL_ID", "POLY_NM"])
 
 # Flag defections (voted, but against party line)
 panel_with_line["defected"] = (
@@ -162,7 +171,7 @@ panel_with_line["defected"] = (
 # Top defectors
 defectors = (
     panel_with_line
-    .groupby("HG_NM")["defected"]
+    .groupby(["MONA_CD", "HG_NM"])["defected"]  # MONA_CD: names repeat
     .agg(["sum", "count"])
     .assign(rate=lambda d: d["sum"] / d["count"] * 100)
     .sort_values("sum", ascending=False)
@@ -179,7 +188,7 @@ Identify bills where the two major parties voted differently:
 # Pivot: party majority per bill
 pivot = (
     majorities
-    .pivot_table(index="BILL_ID", columns="HG_NM_PARTY", values="party_line", aggfunc="first")
+    .pivot_table(index="BILL_ID", columns="POLY_NM", values="party_line", aggfunc="first")
 )
 
 # Contested = major parties split
@@ -202,8 +211,22 @@ The vote panel is ready for models like:
 
 ```r
 # R: Party discipline as DV
+library(arrow)
+library(dplyr)
 library(fixest)
-feols(defected ~ seniority + margin + contested | party + session, data = panel)
+
+panel <- read.csv("vote_panel.csv")
+
+# Member covariates from kna (path relative to the kna checkout).
+# term_number is the seniority at the 22nd Assembly (1 = 초선).
+# reelection is the lifetime count at collection, not seniority then.
+members <- read_parquet("data/processed/members_22.parquet") %>%
+  transmute(MONA_CD = mona_cd, term_number,
+            pr_elected = election_type == "비례대표")
+
+panel <- panel %>% left_join(members, by = "MONA_CD")
+
+feols(defected ~ term_number + pr_elected | POLY_NM + BILL_ID, data = panel)
 ```
 
 ## References
