@@ -149,7 +149,7 @@ db = BillDB()
 
 # The satellite list parties can be merged into their parent parties,
 # as kna's party_bloc does
-SATELLITES ={"더불어민주연합": "더불어민주당", "국민의미래": "국민의힘"}
+SATELLITES = {"더불어민주연합": "더불어민주당", "국민의미래": "국민의힘"}
 m22 = db.members(assembly=22)
 party_map = m22.set_index("mona_cd")["party"].replace(SATELLITES).to_dict()
 ```
