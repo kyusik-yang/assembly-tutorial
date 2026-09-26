@@ -475,11 +475,14 @@ Tip
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>With kna:</strong> <code>nwvrqwxyaytdsfvhu</code> lists only the members serving today, so members who have left the Assembly come out as <code>unknown</code> below. kna’s member table covers all 321 members of the 22nd, with the party at election:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The satellite list parties can be merged into their parent parties,</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># as kna's party_bloc does</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>SATELLITES <span class="op">=</span> {<span class="st">"더불어민주연합"</span>: <span class="st">"더불어민주당"</span>, <span class="st">"국민의미래"</span>: <span class="st">"국민의힘"</span>}</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>m22 <span class="op">=</span> db.members(assembly<span class="op">=</span><span class="dv">22</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>party_map <span class="op">=</span> m22.set_index(<span class="st">"mona_cd"</span>)[<span class="st">"party"</span>].replace(SATELLITES).to_dict()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> kna.data <span class="im">import</span> BillDB</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> BillDB()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># The satellite list parties can be merged into their parent parties,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># as kna's party_bloc does</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>SATELLITES <span class="op">=</span>{<span class="st">"더불어민주연합"</span>: <span class="st">"더불어민주당"</span>, <span class="st">"국민의미래"</span>: <span class="st">"국민의힘"</span>}</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>m22 <span class="op">=</span> db.members(assembly<span class="op">=</span><span class="dv">22</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>party_map <span class="op">=</span> m22.set_index(<span class="st">"mona_cd"</span>)[<span class="st">"party"</span>].replace(SATELLITES).to_dict()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> node <span class="kw">in</span> G.nodes():</span>
