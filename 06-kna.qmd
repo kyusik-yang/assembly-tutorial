@@ -311,6 +311,6 @@ texts <- read_parquet("data/processed/bill_texts_linked.parquet")
 
 ## Companion data
 
-For hearing and audit transcripts (9.9M speech-level records), see the companion dataset:
+For hearing and audit transcripts (15.1M speaker turns), see the companion dataset:
 
-- [kr-hearings-data](https://github.com/kyusik-yang/kr-hearings-data) - Korean National Assembly hearing transcripts (2000-2025)
+- [kr-hearings-data](https://github.com/kyusik-yang/kr-hearings-data) - Korean National Assembly hearing transcripts (2000-2026)
