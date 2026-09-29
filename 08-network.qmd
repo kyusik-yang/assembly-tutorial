@@ -27,20 +27,25 @@ API_KEY = "YOUR_KEY"
 BASE = "https://open.assembly.go.kr/portal/openapi"
 
 def api_get(endpoint, **params):
+    """One page of results. Raises on API errors instead of returning []."""
     params = {"KEY": API_KEY, "Type": "json", "pSize": 100, **params}
     r = httpx.get(f"{BASE}/{endpoint}", params=params,
                   headers={"User-Agent": "research-client"})
+    r.raise_for_status()
     body = r.json()
-    rows = body.get(endpoint, [{}])
-    if isinstance(rows, dict):
-        return []
-    head = rows[0] if rows else {}
-    if "head" in head:
-        code = head["head"][1]["RESULT"]["CODE"]
-        if code != "INFO-000":
+    if endpoint not in body:
+        # Errors come back as HTTP 200 with a top-level RESULT object.
+        # INFO-200 means no data, e.g. a page past the last one.
+        result = body.get("RESULT", {})
+        if result.get("CODE") == "INFO-200":
             return []
-        return rows[1].get("row", [])
-    return []
+        raise RuntimeError(f"{endpoint}: {result.get('CODE')} {result.get('MESSAGE')}")
+    head = body[endpoint][0]["head"]
+    code = head[1]["RESULT"]["CODE"]
+    if code != "INFO-000":
+        raise RuntimeError(f"{endpoint}: {code} {head[1]['RESULT'].get('MESSAGE')}")
+    rows = body[endpoint][1].get("row", []) if len(body[endpoint]) > 1 else []
+    return [rows] if isinstance(rows, dict) else rows
 
 # Collect co-sponsors for bills on a topic
 bills = []
@@ -55,13 +60,21 @@ print(f"Bills found: {len(bills)}")
 
 # Get co-sponsors per bill
 edges = []
+names = {}  # MONA_CD -> name, for labels
 for i, bill in enumerate(bills):
     bill_id = bill["BILL_ID"]
-    sponsors = api_get("BILLINFOPPSR", BILL_ID=bill_id)
-    names = [s["PPSR_NM"] for s in sponsors if s.get("PPSR_NM")]
+    # pSize=1000: the default page of 100 rows would cut the bills
+    # that list more than 100 proposers and supporters
+    sponsors = api_get("BILLINFOPPSR", BILL_ID=bill_id, pSize=1000)
+    # 발의자 = lead and co-proposers, 찬성자 = supporters.
+    # NASS_CD is the MONA_CD, which tells same-name members apart.
+    proposers = [s for s in sponsors
+                 if s.get("PPSR_ROLE") == "발의자" and s.get("NASS_CD")]
+    names.update({s["NASS_CD"]: s["PPSR_NM"] for s in proposers})
+    ids = {s["NASS_CD"] for s in proposers}
 
     # Create pairwise edges
-    for a, b in combinations(sorted(set(names)), 2):
+    for a, b in combinations(sorted(ids), 2):
         edges.append({"source": a, "target": b, "bill_id": bill_id})
 
     if (i + 1) % 20 == 0:
@@ -73,13 +86,31 @@ print(f"Raw edges: {len(edge_df)}")
 ```
 
 ::: {.callout-tip}
-**Faster with kna:** The master database includes pre-built cosponsorship data:
+**Faster with kna:** The master database includes pre-built cosponsorship data, one row per bill and member for every member law bill of the 17th-22nd (1,379,763 rows, 255,415 of them in the 22nd). This builds the same `edge_df` and `names` without any API calls:
 
 ```python
+import pandas as pd
+from itertools import combinations
 from kna.data import BillDB
 db = BillDB()
-edges = pd.read_parquet(db.data_dir / "cosponsorship_edges.parquet")
-# 769K edges, 661 unique members, instant
+
+e = db.cosponsorship_edges(assembly=22)  # instant
+# role is 대표발의 (lead), 공동발의 (co-proposer) or 찬성 (supporter).
+# Keep the proposers, as in the API example.
+e = e[e["role"].isin(["대표발의", "공동발의"])]
+
+# Same topic filter as the API example
+titles = db.bills(assembly=22, columns=["bill_id", "bill_nm"])
+topic_ids = titles.loc[titles["bill_nm"].str.contains("환경", na=False), "bill_id"]
+e = e[e["bill_id"].isin(topic_ids)]
+
+# Nodes are MONA_CDs (member_id), since names repeat
+names = dict(zip(e["member_id"], e["member_name"]))
+edge_df = pd.DataFrame(
+    [{"source": a, "target": b, "bill_id": bill_id}
+     for bill_id, ids in e.groupby("bill_id")["member_id"]
+     for a, b in combinations(sorted(set(ids)), 2)]
+)
 ```
 :::
 
@@ -104,11 +135,29 @@ print(f"Density: {nx.density(G):.4f}")
 ## Step 3: Add party attributes
 
 ```python
-# Get member info for party labels
+# Get member info for party labels, keyed on MONA_CD
 members = api_get("nwvrqwxyaytdsfvhu", AGE="22", pSize=300)
-party_map = {m["HG_NM"]: m["POLY_NM"] for m in members if m.get("HG_NM")}
+party_map = {m["MONA_CD"]: m["POLY_NM"] for m in members if m.get("MONA_CD")}
+```
 
+::: {.callout-tip}
+**With kna:** `nwvrqwxyaytdsfvhu` lists only the members serving today, so members who have left the Assembly come out as `unknown` below. kna's member table covers all 321 members of the 22nd, with the party at election:
+
+```python
+from kna.data import BillDB
+db = BillDB()
+
+# The satellite list parties can be merged into their parent parties,
+# as kna's party_bloc does
+SATELLITES = {"더불어민주연합": "더불어민주당", "국민의미래": "국민의힘"}
+m22 = db.members(assembly=22)
+party_map = m22.set_index("mona_cd")["party"].replace(SATELLITES).to_dict()
+```
+:::
+
+```python
 for node in G.nodes():
+    G.nodes[node]["name"] = names.get(node, node)
     G.nodes[node]["party"] = party_map.get(node, "unknown")
 
 # Party distribution
@@ -131,7 +180,8 @@ betweenness = nx.betweenness_centrality(G, weight="weight")
 
 # Compile into DataFrame
 centrality = pd.DataFrame({
-    "name": list(G.nodes()),
+    "id": list(G.nodes()),
+    "name": [G.nodes[n]["name"] for n in G.nodes()],
     "party": [G.nodes[n].get("party", "") for n in G.nodes()],
     "degree": [degree[n] for n in G.nodes()],
     "strength": [strength[n] for n in G.nodes()],
@@ -185,7 +235,7 @@ for node in G.nodes():
     G.nodes[node]["community"] = partition[node]
 
 community_party = pd.DataFrame([
-    {"name": n, "party": G.nodes[n]["party"], "community": G.nodes[n]["community"]}
+    {"name": G.nodes[n]["name"], "party": G.nodes[n]["party"], "community": G.nodes[n]["community"]}
     for n in G.nodes()
 ])
 
@@ -207,7 +257,7 @@ def cross_party_rate(node, graph):
     cross = sum(1 for n in neighbors if graph.nodes[n].get("party", "") != my_party)
     return cross / len(neighbors)
 
-centrality["cross_party"] = [cross_party_rate(n, G) for n in centrality["name"]]
+centrality["cross_party"] = [cross_party_rate(n, G) for n in centrality["id"]]
 
 # Average cross-party rate by party
 print("\nCross-party collaboration by party:")
@@ -234,7 +284,7 @@ for node in G.nodes():
     node_y.append(y)
     party = G.nodes[node].get("party", "")
     node_color.append(PARTY_COLORS.get(party, "#999999"))
-    node_text.append(f"{node} ({party})<br>Degree: {degree[node]:.3f}")
+    node_text.append(f"{G.nodes[node]['name']} ({party})<br>Degree: {degree[node]:.3f}")
 
 fig = go.Figure()
 fig.add_trace(go.Scatter(

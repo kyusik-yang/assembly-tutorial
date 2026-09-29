@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Korean Legislative Data for Researchers - DW-NOMINATE &amp; Ideological Positioning</title>
+<title>Korean Legislative Data for Researchers - Ideal Points &amp; Ideological Positioning</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -184,7 +184,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </nav>
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">DW-NOMINATE &amp; Ideological Positioning</h1>
+      <h1 class="quarto-secondary-nav-title">Ideal Points &amp; Ideological Positioning</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -282,7 +282,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-ideology.html" class="sidebar-item-text sidebar-link active">DW-NOMINATE &amp; Ideological Positioning</a>
+  <a href="./09-ideology.html" class="sidebar-item-text sidebar-link active">Ideal Points &amp; Ideological Positioning</a>
   </div>
 </li>
       </ul>
@@ -297,9 +297,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
    
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#why-dw-nominate-for-korea" id="toc-why-dw-nominate-for-korea" class="nav-link" data-scroll-target="#why-dw-nominate-for-korea">Why DW-NOMINATE for Korea?</a>
+  <li><a href="#why-roll-call-ideal-points-for-korea" id="toc-why-roll-call-ideal-points-for-korea" class="nav-link" data-scroll-target="#why-roll-call-ideal-points-for-korea">Why roll-call ideal points for Korea?</a>
   <ul class="collapse">
   <li><a href="#data-foundation" id="toc-data-foundation" class="nav-link" data-scroll-target="#data-foundation">Data foundation</a></li>
+  <li><a href="#three-series" id="toc-three-series" class="nav-link" data-scroll-target="#three-series">Three series</a></li>
   </ul></li>
   <li><a href="#loading-ideal-points" id="toc-loading-ideal-points" class="nav-link" data-scroll-target="#loading-ideal-points">Loading ideal points</a>
   <ul class="collapse">
@@ -310,7 +311,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#visualizing-the-ideological-space" id="toc-visualizing-the-ideological-space" class="nav-link" data-scroll-target="#visualizing-the-ideological-space">Visualizing the ideological space</a>
   <ul class="collapse">
   <li><a href="#scatter-plot-by-assembly" id="toc-scatter-plot-by-assembly" class="nav-link" data-scroll-target="#scatter-plot-by-assembly">Scatter plot by assembly</a></li>
-  <li><a href="#density-by-party" id="toc-density-by-party" class="nav-link" data-scroll-target="#density-by-party">Density by party</a></li>
+  <li><a href="#density-by-bloc" id="toc-density-by-bloc" class="nav-link" data-scroll-target="#density-by-bloc">Density by bloc</a></li>
   </ul></li>
   <li><a href="#polarization-analysis" id="toc-polarization-analysis" class="nav-link" data-scroll-target="#polarization-analysis">Polarization analysis</a>
   <ul class="collapse">
@@ -332,8 +333,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">DW-NOMINATE &amp; Ideological Positioning</h1>
-<p class="subtitle lead">Ideal points, polarization trends, and spatial voting models for the Korean National Assembly</p>
+<h1 class="title d-none d-lg-block">Ideal Points &amp; Ideological Positioning</h1>
+<p class="subtitle lead">W-NOMINATE and DW-NOMINATE ideal points, polarization trends, and spatial voting models for the Korean National Assembly</p>
 </div>
 
 
@@ -349,11 +350,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>DW-NOMINATE (Dynamic Weighted Nominal Three-Step Estimation) places legislators on a common ideological scale using their roll-call voting records. Unlike party labels - which shift with frequent mergers and rebrandings in Korean politics - ideal points provide a <strong>continuous, member-level measure</strong> that is comparable across assemblies.</p>
-<p>The <code>kna</code> master database includes <strong>936 DW-NOMINATE ideal point estimates</strong> for the 20th-22nd Assembly (2016-present), aligned across terms using 218 bridging legislators.</p>
+<p>Roll-call scaling methods such as W-NOMINATE and DW-NOMINATE (Dynamic Weighted Nominal Three-Step Estimation) place legislators on an ideological scale using their roll-call voting records. Unlike party labels - which shift with frequent mergers and rebrandings in Korean politics - ideal points provide a <strong>continuous, member-level measure</strong>.</p>
+<p>The <code>kna</code> master database (release 0.8.1) includes <strong>955 ideal-point estimates</strong> for the 20th-22nd Assembly (2016-present), one per legislator-term, in three series. The default series is per-assembly W-NOMINATE, aligned across terms using the legislators who served in consecutive assemblies. A pooled DW-NOMINATE series is shipped alongside it.</p>
 <p><strong>What you will learn:</strong></p>
 <ol type="1">
-<li>What DW-NOMINATE measures and why it matters for Korean politics</li>
+<li>The three ideal-point series in kna and which one to use</li>
 <li>How to load and visualize ideal points</li>
 <li>Polarization trends across the 20th-22nd Assembly</li>
 <li>Using ideal points as independent/dependent variables in regression</li>
@@ -368,12 +369,12 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Interactive explorer:</strong> See all 936 legislator-terms on an interactive scatterplot at <a href="https://kyusik-yang.github.io/kna/voteview.html">Uijeong Jido 의정지도</a>.</p>
+<p><strong>Interactive explorer:</strong> See all 955 legislator-terms on an interactive scatterplot at <a href="https://kyusik-yang.github.io/kna/voteview.html">Uijeong Jido 의정지도</a>.</p>
 </div>
 </div>
 </section>
-<section id="why-dw-nominate-for-korea" class="level2">
-<h2 class="anchored" data-anchor-id="why-dw-nominate-for-korea">Why DW-NOMINATE for Korea?</h2>
+<section id="why-roll-call-ideal-points-for-korea" class="level2">
+<h2 class="anchored" data-anchor-id="why-roll-call-ideal-points-for-korea">Why roll-call ideal points for Korea?</h2>
 <p>Korean parties undergo frequent mergers, splits, and name changes. What was the Grand National Party (한나라당) became the Saenuri Party (새누리당), then the Liberty Korea Party (자유한국당), then the United Future Party (미래통합당), and finally the People Power Party (국민의힘) - all within a decade. The progressive bloc has undergone similar rebranding cycles.</p>
 <p>Simple party-label-based ideology measures cannot capture:</p>
 <ul>
@@ -381,7 +382,7 @@ Tip
 <li><strong>Cross-party bridges</strong> (legislators who vote across party lines)</li>
 <li><strong>Temporal shifts</strong> (has the same party moved left or right?)</li>
 </ul>
-<p>Roll-call-based ideal points solve all three. DW-NOMINATE specifically enables <strong>cross-assembly comparison</strong> by exploiting bridging legislators - members who serve in multiple terms - to anchor a common ideological scale.</p>
+<p>Roll-call-based ideal points solve all three. A W-NOMINATE fit of one assembly places its legislators on one scale. Comparing assemblies needs a common scale, which kna builds from <strong>bridging legislators</strong> - members who serve in more than one term. The bridged series maps each assembly onto the previous one, and pooled DW-NOMINATE estimates the three assemblies together.</p>
 <section id="data-foundation" class="level3">
 <h3 class="anchored" data-anchor-id="data-foundation">Data foundation</h3>
 <table class="table">
@@ -398,7 +399,7 @@ Tip
 <tbody>
 <tr class="odd">
 <td>Legislator-terms</td>
-<td>936</td>
+<td>955 (317 in the 20th, 318 in the 21st, 320 in the 22nd)</td>
 </tr>
 <tr class="even">
 <td>Assemblies</td>
@@ -406,22 +407,81 @@ Tip
 </tr>
 <tr class="odd">
 <td>Roll call votes</td>
-<td>2,425,113 member-level records</td>
+<td>2,562,024 member-level records on 8,610 recorded votes</td>
 </tr>
 <tr class="even">
-<td>Bridging legislators</td>
-<td>218 (126 across 20-21st, 151 across 21-22nd, 68 all three)</td>
+<td>Contested votes scaled</td>
+<td>269 / 331 / 226 (at least 2.5% of those voting yea or nay in the minority)</td>
 </tr>
 <tr class="odd">
-<td>Estimation method</td>
-<td>DW-NOMINATE via R <code>wnominate</code> + <code>pscl</code> packages</td>
+<td>Bridging legislators</td>
+<td>221 in two or more terms (126 in both the 20th and 21st, 156 in both the 21st and 22nd, 70 in all three)</td>
 </tr>
 <tr class="even">
-<td>Alignment</td>
-<td>Sign-flipped so negative = liberal (진보), positive = conservative (보수)</td>
+<td>Estimation method</td>
+<td>W-NOMINATE per assembly via R <code>wnominate</code>, chained bridging, and pooled DW-NOMINATE via R <code>dwnominate</code></td>
+</tr>
+<tr class="odd">
+<td>Sign</td>
+<td>Positive = conservative (보수), negative = liberal (진보), anchored on 추경호 (G152611B)</td>
+</tr>
+<tr class="even">
+<td>Vintage</td>
+<td>v20260917, votes through 2026-09-17</td>
 </tr>
 </tbody>
 </table>
+<p>A legislator is scaled with at least 20 contested yea or nay votes. 찬성 counts as yea and 반대 as nay, while 기권 and 불참 are treated as missing. The 22nd Assembly is in session, so its values are provisional. The 22nd votes of the 16 members that the vote API omits come from LIKMS. One of them, 한동훈, has too few contested votes and no 22nd ideal point.</p>
+</section>
+<section id="three-series" class="level3">
+<h3 class="anchored" data-anchor-id="three-series">Three series</h3>
+<table class="table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><code>series=</code></th>
+<th>File</th>
+<th>Column</th>
+<th>Comparable within an assembly</th>
+<th>Comparable across assemblies</th>
+<th>Movement of a legislator</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>"bridged"</code> (default)</td>
+<td><code>ideal_points_bridged.csv</code></td>
+<td><code>bridged_1d</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Partly</td>
+</tr>
+<tr class="even">
+<td><code>"wnominate"</code></td>
+<td><code>ideal_points_wnominate.csv</code></td>
+<td><code>wnom_1d</code></td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td><code>"dwnominate"</code></td>
+<td><code>ideal_points_dwnominate.csv</code></td>
+<td><code>dwnom_1d</code></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No, constant</td>
+</tr>
+</tbody>
+</table>
+<p>The bridged series equals per-assembly W-NOMINATE in the 20th. It maps the 21st onto the 20th and the 22nd onto the aligned 21st with a least-squares line fitted on the legislators who served in both, which assumes that these legislators do not move on average. With only three terms, pooled DW-NOMINATE admits one position per legislator for all terms, so changes in its party means across assemblies come entirely from turnover. Section 10 of the <a href="https://github.com/kyusik-yang/kna/blob/main/CODEBOOK.md">kna codebook</a> describes the estimation.</p>
 </section>
 </section>
 <section id="loading-ideal-points" class="level2">
@@ -431,11 +491,17 @@ Tip
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> kna.data <span class="im">import</span> BillDB</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>db <span class="op">=</span> BillDB()</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>ip <span class="op">=</span> db.ideal_points()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>ip <span class="op">=</span> db.ideal_points()  <span class="co"># bridged series (default)</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Legislator-terms: </span><span class="sc">{</span><span class="bu">len</span>(ip)<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Columns: </span><span class="sc">{</span><span class="bu">list</span>(ip.columns)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(ip.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(ip.head())</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># The other two series</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>wnom <span class="op">=</span> db.ideal_points(series<span class="op">=</span><span class="st">"wnominate"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>dwnom <span class="op">=</span> db.ideal_points(series<span class="op">=</span><span class="st">"dwnominate"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Legislator-terms: 955
+Columns: ['member_id', 'member_name', 'party', 'party_bloc', 'term', 'wnom_1d', 'ideal_point', 'vintage']</code></pre>
 <p>Key columns:</p>
 <table class="table">
 <colgroup>
@@ -455,7 +521,7 @@ Tip
 </tr>
 <tr class="even">
 <td><code>member_name</code></td>
-<td>Legislator name</td>
+<td>Legislator name. Names repeat, so join on <code>member_id</code></td>
 </tr>
 <tr class="odd">
 <td><code>term</code></td>
@@ -463,131 +529,153 @@ Tip
 </tr>
 <tr class="even">
 <td><code>party</code></td>
-<td>Party at time of service</td>
-</tr>
-<tr class="odd">
-<td><code>coord1D</code></td>
-<td>Raw W-NOMINATE first dimension</td>
-</tr>
-<tr class="even">
-<td><code>aligned</code></td>
-<td>DW-NOMINATE, cross-assembly aligned and sign-flipped</td>
+<td>Party at election in that assembly, including satellite list parties</td>
 </tr>
 <tr class="odd">
 <td><code>party_bloc</code></td>
-<td>Broad bloc (liberal, conservative, left, centrist, independent)</td>
+<td>Broad bloc (conservative, liberal, progressive, rebuilding, centrist, liberal_minor, independent)</td>
+</tr>
+<tr class="even">
+<td><code>ideal_point</code></td>
+<td>First dimension of the series. <code>db.ideal_points()</code> renames <code>bridged_1d</code>, <code>wnom_1d</code> or <code>dwnom_1d</code> to this name</td>
+</tr>
+<tr class="odd">
+<td><code>wnom_1d</code></td>
+<td>Bridged series only. The per-assembly W-NOMINATE value before alignment</td>
+</tr>
+<tr class="even">
+<td><code>vintage</code></td>
+<td><code>v</code> followed by the date of the last vote used</td>
 </tr>
 </tbody>
 </table>
-<p>The <code>aligned</code> column is what you should use for analysis. It is:</p>
+<p>The <code>ideal_point</code> column of the default series is what you should use for analysis. It is:</p>
 <ul>
-<li><strong>Cross-assembly comparable</strong> (a score of -0.3 means the same thing in the 20th and 22nd)</li>
-<li><strong>Sign-flipped</strong> to match political convention: negative = liberal (진보), positive = conservative (보수)</li>
+<li><strong>Cross-assembly comparable</strong> through bridging, under the assumption that the bridging legislators do not move on average</li>
+<li><strong>Signed</strong> to match political convention, with negative = liberal (진보) and positive = conservative (보수). No sign flip is needed.</li>
 </ul>
 </section>
 <section id="r" class="level3">
 <h3 class="anchored" data-anchor-id="r">R</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>ip <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/dw_ideal_points_20_22.csv"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">aligned =</span> <span class="sc">-</span>aligned)  <span class="co"># flip: negative = liberal, positive = conservative</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>ip <span class="sc">%&gt;%</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(term, party_bloc) <span class="sc">%&gt;%</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean_score =</span> <span class="fu">mean</span>(aligned), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(term, mean_score)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Path relative to the root of the kna checkout</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>ip <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/ideal_points_bridged.csv"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">member_id =</span> <span class="fu">col_character</span>())) <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">ideal_point =</span> bridged_1d)  <span class="co"># positive = conservative, no flip needed</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ip <span class="sc">%&gt;%</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(term, party_bloc) <span class="sc">%&gt;%</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean_score =</span> <span class="fu">mean</span>(ideal_point), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(term, mean_score)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="via-kna-cli" class="level3">
 <h3 class="anchored" data-anchor-id="via-kna-cli">Via kna CLI</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick lookup</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> legislator 이재명 <span class="at">--assembly</span> 22</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   ideal point   -0.366 (DW-NOMINATE)</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   rank          103 / 304 (← 진보 ··· 보수 →)</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Export for analysis</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> export idealpoints.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick lookup</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> legislator 이재명 <span class="at">--assembly</span> 22</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   ideal point          -0.359 (22nd, bridged W-NOMINATE, v20260917)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   rank                 173 / 320 in the 22nd (← 진보 ··· 보수 →)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>kna export</code> writes bills, not ideal points. To save the ideal points for Stata or Excel, write them from Python:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ip.to_csv(<span class="st">"idealpoints.csv"</span>, index<span class="op">=</span><span class="va">False</span>, encoding<span class="op">=</span><span class="st">"utf-8-sig"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="visualizing-the-ideological-space" class="level2">
 <h2 class="anchored" data-anchor-id="visualizing-the-ideological-space">Visualizing the ideological space</h2>
 <section id="scatter-plot-by-assembly" class="level3">
 <h3 class="anchored" data-anchor-id="scatter-plot-by-assembly">Scatter plot by assembly</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.strip(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    ip, x<span class="op">=</span><span class="st">"aligned"</span>, y<span class="op">=</span><span class="st">"term"</span>, color<span class="op">=</span><span class="st">"party_bloc"</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    hover_data<span class="op">=</span>[<span class="st">"member_name"</span>, <span class="st">"party"</span>],</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    color_discrete_map<span class="op">=</span>{</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"liberal"</span>: <span class="st">"#004EA2"</span>, <span class="st">"conservative"</span>: <span class="st">"#E61E2B"</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"left"</span>: <span class="st">"#FFCC00"</span>, <span class="st">"centrist"</span>: <span class="st">"#FF6B00"</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"independent"</span>: <span class="st">"#999999"</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    },</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>{<span class="st">"aligned"</span>: <span class="st">"DW-NOMINATE (← 진보  ···  보수 →)"</span>, <span class="st">"term"</span>: <span class="st">"Assembly"</span>},</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Ideological Distribution by Assembly"</span>,</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>fig.update_layout(template<span class="op">=</span><span class="st">"plotly_white"</span>, height<span class="op">=</span><span class="dv">400</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.strip(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    ip, x<span class="op">=</span><span class="st">"ideal_point"</span>, y<span class="op">=</span><span class="st">"term"</span>, color<span class="op">=</span><span class="st">"party_bloc"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    hover_data<span class="op">=</span>[<span class="st">"member_name"</span>, <span class="st">"party"</span>],</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    color_discrete_map<span class="op">=</span>{</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"liberal"</span>: <span class="st">"#004EA2"</span>, <span class="st">"conservative"</span>: <span class="st">"#E61E2B"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"progressive"</span>: <span class="st">"#FFCC00"</span>, <span class="st">"rebuilding"</span>: <span class="st">"#003764"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"centrist"</span>: <span class="st">"#FF6B00"</span>, <span class="st">"liberal_minor"</span>: <span class="st">"#56B4E9"</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"independent"</span>: <span class="st">"#999999"</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>{<span class="st">"ideal_point"</span>: <span class="st">"Bridged W-NOMINATE (← 진보  ···  보수 →)"</span>, <span class="st">"term"</span>: <span class="st">"Assembly"</span>},</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Ideological Distribution by Assembly"</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>fig.update_layout(template<span class="op">=</span><span class="st">"plotly_white"</span>, height<span class="op">=</span><span class="dv">400</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="density-by-party" class="level3">
-<h3 class="anchored" data-anchor-id="density-by-party">Density by party</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.figure_factory <span class="im">as</span> ff</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>dem <span class="op">=</span> ip[ip[<span class="st">"party"</span>] <span class="op">==</span> <span class="st">"더불어민주당"</span>][<span class="st">"aligned"</span>]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>ppp <span class="op">=</span> ip[ip[<span class="st">"party"</span>] <span class="op">==</span> <span class="st">"국민의힘"</span>][<span class="st">"aligned"</span>]</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> ff.create_distplot(</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    [dem, ppp],</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"더불어민주당"</span>, <span class="st">"국민의힘"</span>],</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    colors<span class="op">=</span>[<span class="st">"#004EA2"</span>, <span class="st">"#E61E2B"</span>],</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    bin_size<span class="op">=</span><span class="fl">0.02</span>, show_rug<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">"DW-NOMINATE (← 진보  ···  보수 →)"</span>,</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">"plotly_white"</span>, height<span class="op">=</span><span class="dv">350</span>,</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="density-by-bloc" class="level3">
+<h3 class="anchored" data-anchor-id="density-by-bloc">Density by bloc</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.figure_factory <span class="im">as</span> ff</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ip22 <span class="op">=</span> ip[ip[<span class="st">"term"</span>] <span class="op">==</span> <span class="dv">22</span>]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>lib <span class="op">=</span> ip22[ip22[<span class="st">"party_bloc"</span>] <span class="op">==</span> <span class="st">"liberal"</span>][<span class="st">"ideal_point"</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> ip22[ip22[<span class="st">"party_bloc"</span>] <span class="op">==</span> <span class="st">"conservative"</span>][<span class="st">"ideal_point"</span>]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> ff.create_distplot(</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    [lib, con],</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"Liberal bloc"</span>, <span class="st">"Conservative bloc"</span>],</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    colors<span class="op">=</span>[<span class="st">"#004EA2"</span>, <span class="st">"#E61E2B"</span>],</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    bin_size<span class="op">=</span><span class="fl">0.02</span>, show_rug<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">"Bridged W-NOMINATE, 22nd Assembly (← 진보  ···  보수 →)"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">"plotly_white"</span>, height<span class="op">=</span><span class="dv">350</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The blocs follow <code>party_bloc</code>, so the liberal bloc of the 22nd includes the members elected on the 더불어민주연합 list and the conservative bloc those elected on the 국민의미래 list.</p>
 </section>
 </section>
 <section id="polarization-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="polarization-analysis">Polarization analysis</h2>
 <p>Polarization is measured as the distance between the liberal and conservative bloc means:</p>
 <p><span class="math display">\[\text{Polarization}_t = |\bar{x}_{liberal,t} - \bar{x}_{conservative,t}|\]</span></p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>BROAD_BLOC <span class="op">=</span> {</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"국민의힘"</span>: <span class="st">"conservative"</span>, <span class="st">"미래통합당"</span>: <span class="st">"conservative"</span>,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"미래한국당"</span>: <span class="st">"conservative"</span>, <span class="st">"자유한국당"</span>: <span class="st">"conservative"</span>,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"더불어민주당"</span>: <span class="st">"liberal"</span>, <span class="st">"열린민주당"</span>: <span class="st">"liberal"</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"민생당"</span>: <span class="st">"liberal"</span>, <span class="st">"새로운미래"</span>: <span class="st">"liberal"</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>ip[<span class="st">"broad"</span>] <span class="op">=</span> ip[<span class="st">"party"</span>].<span class="bu">map</span>(BROAD_BLOC)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>polar <span class="op">=</span> (</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    ip[ip[<span class="st">"broad"</span>].isin([<span class="st">"liberal"</span>, <span class="st">"conservative"</span>])]</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"term"</span>, <span class="st">"broad"</span>])[<span class="st">"aligned"</span>]</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    .mean()</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    .unstack()</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>polar[<span class="st">"gap"</span>] <span class="op">=</span> <span class="bu">abs</span>(polar[<span class="st">"liberal"</span>] <span class="op">-</span> polar[<span class="st">"conservative"</span>])</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(polar.<span class="bu">round</span>(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># party_bloc already groups the parties, including 새누리당 and the</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># satellite list parties. A hand-written party list can silently drop</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># members, because party is the party at election.</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>blocs <span class="op">=</span> ip[ip[<span class="st">"party_bloc"</span>].isin([<span class="st">"liberal"</span>, <span class="st">"conservative"</span>])]</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>polar <span class="op">=</span> (</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    blocs</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"term"</span>, <span class="st">"party_bloc"</span>])[<span class="st">"ideal_point"</span>]</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    .mean()</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    .unstack()</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>polar[<span class="st">"gap"</span>] <span class="op">=</span> <span class="bu">abs</span>(polar[<span class="st">"liberal"</span>] <span class="op">-</span> polar[<span class="st">"conservative"</span>])</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(polar.<span class="bu">round</span>(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Expected output:</p>
-<pre><code>broad  conservative  liberal    gap
+<pre><code>party_bloc  conservative  liberal    gap
 term
-20         0.401    -0.339  0.739
-21         0.427    -0.386  0.813
-22         0.432    -0.372  0.804</code></pre>
-<p>The gap widened from 0.739 (20th) to 0.813 (21st), then slightly narrowed to 0.804 (22nd). This pattern is consistent with the intensification of partisan conflict during the 21st Assembly.</p>
+20                 0.453   -0.364  0.818
+21                 0.456   -0.380  0.836
+22                 0.433   -0.385  0.818</code></pre>
+<p>In the bridged series the gap is 0.818 in the 20th, 0.836 in the 21st and 0.818 in the 22nd, 0.1% larger in the 22nd than in the 20th. The three series do not give the same trend, so it is worth computing the gap in each:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> series <span class="kw">in</span> [<span class="st">"bridged"</span>, <span class="st">"wnominate"</span>, <span class="st">"dwnominate"</span>]:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> db.ideal_points(series<span class="op">=</span>series)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> d[d[<span class="st">"party_bloc"</span>].isin([<span class="st">"liberal"</span>, <span class="st">"conservative"</span>])]</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    means <span class="op">=</span> d.groupby([<span class="st">"term"</span>, <span class="st">"party_bloc"</span>])[<span class="st">"ideal_point"</span>].mean().unstack()</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    gap <span class="op">=</span> (means[<span class="st">"liberal"</span>] <span class="op">-</span> means[<span class="st">"conservative"</span>]).<span class="bu">abs</span>()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>series<span class="sc">:&lt;11}</span><span class="ss">"</span>, gap.<span class="bu">round</span>(<span class="dv">3</span>).tolist(), <span class="ss">f"</span><span class="sc">{</span>gap[<span class="dv">22</span>] <span class="op">/</span> gap[<span class="dv">20</span>] <span class="op">-</span> <span class="dv">1</span><span class="sc">:+.1%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>bridged     [0.818, 0.836, 0.818] +0.1%
+wnominate   [0.818, 0.931, 1.068] +30.6%
+dwnominate  [0.762, 0.809, 0.834] +9.5%</code></pre>
+<p>The per-assembly W-NOMINATE gaps are not comparable across assemblies, because each fit fixes its own unit from the configuration it recovers. What a per-assembly fit identifies is the ratio of the distance between the blocs to the dispersion within them. Bridging rescales distance and dispersion by the same factor and leaves that ratio unchanged. The kna codebook therefore recommends reporting within-party dispersion together with the distance, and treating the growth in the per-assembly series as an upper bound (CODEBOOK.md, section 10.4).</p>
 <section id="within-party-sorting" class="level3">
 <h3 class="anchored" data-anchor-id="within-party-sorting">Within-party sorting</h3>
-<p>Polarization can increase through two mechanisms: parties moving apart (divergence) or members within parties becoming more homogeneous (sorting). Standard deviations reveal which:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sorting <span class="op">=</span> (</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    ip[ip[<span class="st">"party"</span>].isin([<span class="st">"더불어민주당"</span>, <span class="st">"국민의힘"</span>])]</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"term"</span>, <span class="st">"party"</span>])[<span class="st">"aligned"</span>]</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    .agg([<span class="st">"mean"</span>, <span class="st">"std"</span>, <span class="st">"count"</span>])</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">3</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sorting)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Declining standard deviations indicate sorting - fewer moderates within each party.</p>
+<p>Polarization can increase through two mechanisms, blocs moving apart (divergence) or members within blocs becoming more homogeneous (sorting). Standard deviations reveal which:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sorting <span class="op">=</span> (</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    blocs</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"term"</span>, <span class="st">"party_bloc"</span>])[<span class="st">"ideal_point"</span>]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    .agg([<span class="st">"mean"</span>, <span class="st">"std"</span>, <span class="st">"count"</span>])</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sorting)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>                    mean    std  count
+term party_bloc
+20   conservative  0.453  0.204    124
+     liberal      -0.364  0.099    136
+21   conservative  0.456  0.153    115
+     liberal      -0.380  0.091    183
+22   conservative  0.433  0.110    113
+     liberal      -0.385  0.059    188</code></pre>
+<p>Declining standard deviations indicate sorting - fewer moderates within each bloc. The ratio of the gap to the pooled within-bloc standard deviation is 5.18, 7.04 and 10.01 in the 20th, 21st and 22nd in the bridged series, and 7.00, 7.11 and 6.80 in the pooled DW-NOMINATE series.</p>
 </section>
 </section>
 <section id="using-ideal-points-in-regression" class="level2">
@@ -595,52 +683,67 @@ term
 <section id="as-independent-variable" class="level3">
 <h3 class="anchored" data-anchor-id="as-independent-variable">As independent variable</h3>
 <p>Ideal points predict legislative behavior beyond party labels:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fixest)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Does ideology predict bill passage (controlling for party)?</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>bills <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data/processed/master_bills_22.parquet"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(bill_kind <span class="sc">==</span> <span class="st">"법률안"</span>, ppsr_kind <span class="sc">==</span> <span class="st">"의원"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Join ideal points to bills via lead proposer</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>bills_ip <span class="ot">&lt;-</span> bills <span class="sc">%&gt;%</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(ip <span class="sc">%&gt;%</span> <span class="fu">filter</span>(term <span class="sc">==</span> <span class="dv">22</span>), <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"rst_mona_cd"</span> <span class="ot">=</span> <span class="st">"member_id"</span>))</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">feols</span>(enacted <span class="sc">~</span> aligned <span class="sc">+</span> <span class="fu">I</span>(aligned<span class="sc">^</span><span class="dv">2</span>) <span class="sc">|</span> committee_nm, <span class="at">data =</span> bills_ip)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(arrow)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fixest)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Does ideology predict bill passage (with committee fixed effects)?</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>bills <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data/processed/master_bills_22.parquet"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(bill_kind <span class="sc">==</span> <span class="st">"법률안"</span>, ppsr_kind <span class="sc">==</span> <span class="st">"의원"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">","</span>, rst_mona_cd))  <span class="co"># joint leads are comma-joined MONA_CDs</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Join ideal points to bills via the lead proposer's MONA_CD</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>bills_ip <span class="ot">&lt;-</span> bills <span class="sc">%&gt;%</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(ip <span class="sc">%&gt;%</span> <span class="fu">filter</span>(term <span class="sc">==</span> <span class="dv">22</span>), <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"rst_mona_cd"</span> <span class="ot">=</span> <span class="st">"member_id"</span>))</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">feols</span>(enacted <span class="sc">~</span> ideal_point <span class="sc">+</span> <span class="fu">I</span>(ideal_point<span class="sc">^</span><span class="dv">2</span>) <span class="sc">|</span> committee_nm, <span class="at">data =</span> bills_ip)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="as-dependent-variable" class="level3">
 <h3 class="anchored" data-anchor-id="as-dependent-variable">As dependent variable</h3>
 <p>What predicts a legislator’s ideological position?</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge legislator metadata</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>members <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data/processed/legislator_id_mapping.parquet"</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>ip_full <span class="ot">&lt;-</span> ip <span class="sc">%&gt;%</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="dv">22</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(members, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"member_id"</span>))</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Does electoral method matter?</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">feols</span>(aligned <span class="sc">~</span> pr_elected <span class="sc">+</span> female <span class="sc">+</span> seniority <span class="sc">|</span> party, <span class="at">data =</span> ip_full)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge legislator metadata, one row per member of the 22nd</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>members <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data/processed/members_22.parquet"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">member_id =</span> mona_cd,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">pr_elected =</span> election_type <span class="sc">==</span> <span class="st">"비례대표"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">female =</span> sex <span class="sc">==</span> <span class="st">"여"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">seniority =</span> term_number)  <span class="co"># seniority at the 22nd, not reelection</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>ip_full <span class="ot">&lt;-</span> ip <span class="sc">%&gt;%</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="dv">22</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(members, <span class="at">by =</span> <span class="st">"member_id"</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Does electoral method matter? party_bloc, not party, as the fixed effect,</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># because the proportional members of the two main blocs were elected on</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co"># satellite lists (더불어민주연합, 국민의미래)</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="fu">feols</span>(ideal_point <span class="sc">~</span> pr_elected <span class="sc">+</span> female <span class="sc">+</span> seniority <span class="sc">|</span> party_bloc, <span class="at">data =</span> ip_full)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="spatial-voting-models" class="level3">
 <h3 class="anchored" data-anchor-id="spatial-voting-models">Spatial voting models</h3>
 <p>For advanced applications, the raw roll-call data enables custom ideal point estimation:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pscl)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load roll calls</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>votes <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data/processed/roll_calls_all.parquet"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="dv">22</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Pivot to vote matrix (legislators x bills)</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>vote_matrix <span class="ot">&lt;-</span> votes <span class="sc">%&gt;%</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vote_num =</span> <span class="fu">case_when</span>(</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    vote <span class="sc">==</span> <span class="st">"찬성"</span> <span class="sc">~</span> <span class="dv">1</span>, vote <span class="sc">==</span> <span class="st">"반대"</span> <span class="sc">~</span> <span class="dv">6</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(member_name, vote_event, vote_num) <span class="sc">%&gt;%</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> vote_event, <span class="at">values_from =</span> vote_num)</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate with wnominate</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>rc <span class="ot">&lt;-</span> <span class="fu">rollcall</span>(<span class="fu">as.matrix</span>(vote_matrix[, <span class="sc">-</span><span class="dv">1</span>]),</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">legis.names =</span> vote_matrix<span class="sc">$</span>member_name)</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">wnominate</span>(rc, <span class="at">dims =</span> <span class="dv">2</span>, <span class="at">polarity =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pscl)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wnominate)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load roll calls (17th-22nd) and keep the 22nd, one row per bill_id and member_id</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>votes <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data/processed/roll_calls_all.parquet"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="dv">22</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Pivot to vote matrix (legislators x votes), keyed on MONA_CD because</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co"># names repeat. 찬성 = yea, 반대 = nay, 기권 and 불참 = missing, and no</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co"># row = not seated at the time of the vote.</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>vote_matrix <span class="ot">&lt;-</span> votes <span class="sc">%&gt;%</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vote_num =</span> <span class="fu">case_when</span>(</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    vote <span class="sc">==</span> <span class="st">"찬성"</span> <span class="sc">~</span> <span class="dv">1</span>, vote <span class="sc">==</span> <span class="st">"반대"</span> <span class="sc">~</span> <span class="dv">6</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">9</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(member_id, bill_id, vote_num) <span class="sc">%&gt;%</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> bill_id, <span class="at">values_from =</span> vote_num, <span class="at">values_fill =</span> <span class="dv">0</span>)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate with wnominate, with the kna thresholds (2.5% minority, 20</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="co"># votes) and the kna sign anchor 추경호 (G152611B) on both dimensions</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>rc <span class="ot">&lt;-</span> <span class="fu">rollcall</span>(<span class="fu">as.matrix</span>(vote_matrix[, <span class="sc">-</span><span class="dv">1</span>]),</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>               <span class="at">yea =</span> <span class="dv">1</span>, <span class="at">nay =</span> <span class="dv">6</span>, <span class="at">missing =</span> <span class="dv">9</span>, <span class="at">notInLegis =</span> <span class="dv">0</span>,</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>               <span class="at">legis.names =</span> vote_matrix<span class="sc">$</span>member_id)</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">wnominate</span>(rc, <span class="at">dims =</span> <span class="dv">2</span>, <span class="at">minvotes =</span> <span class="dv">20</span>, <span class="at">lop =</span> <span class="fl">0.025</span>,</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>                    <span class="at">polarity =</span> <span class="fu">c</span>(<span class="st">"G152611B"</span>, <span class="st">"G152611B"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="key-references" class="level2">
@@ -654,7 +757,7 @@ term
 </section>
 <section id="interactive-explorer" class="level2">
 <h2 class="anchored" data-anchor-id="interactive-explorer">Interactive explorer</h2>
-<p>Explore all 936 legislator-terms interactively:</p>
+<p>Explore all 955 legislator-terms interactively:</p>
 <ul>
 <li><a href="https://kyusik-yang.github.io/kna/voteview.html">Uijeong Jido 의정지도</a> - scatter plot with party colors, search, and polarization trend</li>
 </ul>
