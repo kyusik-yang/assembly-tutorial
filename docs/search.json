@@ -235,7 +235,7 @@
     "href": "06-kna.html#companion-data",
     "title": "The kna CLI: Master Database",
     "section": "Companion data",
-    "text": "Companion data\nFor hearing and audit transcripts (9.9M speech-level records), see the companion dataset:\n\nkr-hearings-data - Korean National Assembly hearing transcripts (2000-2025)"
+    "text": "Companion data\nFor hearing and audit transcripts (15.1M speaker turns), see the companion dataset:\n\nkr-hearings-data - Korean National Assembly hearing transcripts (2000-2026)"
   },
   {
     "objectID": "index.html",
@@ -389,7 +389,7 @@
     "href": "02-mcp.html#tips-for-effective-mcp-queries",
     "title": "Chapter 2: MCP + Claude",
     "section": "Tips for effective MCP queries",
-    "text": "Tips for effective MCP queries\n\n\n\n\n\n\nBe specific about the assembly term\n\n\n\nAlways include the assembly number (대수) in your query. The API covers the 16th-22nd assemblies. “22대” = 22nd National Assembly (2024-present).\n\n\n\n\n\n\n\n\nUse BILL_ID not BILL_NO for proposer queries\n\n\n\nsearch_bills returns both BILL_ID (e.g., PRC_Y2Z6X0...) and BILL_NO (e.g., 2217175). The get_bill_proposers tool requires BILL_ID. If you ask Claude to get proposers, make sure it uses the right field.\n\n\n\n\n\n\n\n\nWhat MCP cannot do (yet)\n\n\n\nCommittee transcripts (회의록) and citizen petitions (청원) are not available via the Open API. For transcripts, use kr-hearings-data (9.9M speech records) or likms.assembly.go.kr/record. For bill propose-reason texts (제안이유), use kna (60,925 bills, 20th-22nd)."
+    "text": "Tips for effective MCP queries\n\n\n\n\n\n\nBe specific about the assembly term\n\n\n\nAlways include the assembly number (대수) in your query. The API covers the 16th-22nd assemblies. “22대” = 22nd National Assembly (2024-present).\n\n\n\n\n\n\n\n\nUse BILL_ID not BILL_NO for proposer queries\n\n\n\nsearch_bills returns both BILL_ID (e.g., PRC_Y2Z6X0...) and BILL_NO (e.g., 2217175). The get_bill_proposers tool requires BILL_ID. If you ask Claude to get proposers, make sure it uses the right field.\n\n\n\n\n\n\n\n\nWhat MCP cannot do (yet)\n\n\n\nCommittee transcripts (회의록) and citizen petitions (청원) are not available via the Open API. For transcripts, use kr-hearings-data (15.1M speaker turns) or likms.assembly.go.kr/record. For bill propose-reason texts (제안이유), use kna (60,925 bills, 20th-22nd)."
   },
   {
     "objectID": "02-mcp.html#interactive-demo",
