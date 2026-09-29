@@ -49,6 +49,14 @@ After installing the MCP server ([Chapter 1](01-setup.qmd)), Claude gains access
 | `get_plenary_agenda` | Upcoming plenary session agenda items |
 | `get_bill_committee_review` | Committee meeting records for a bill |
 | `get_bill_summary` | All-in-one convenience tool: detail + review + proposers + committee meetings |
+| `analyze_legislator` | One-call member profile: member info, all sponsored bills and career statistics |
+| `get_party_cohesion` | Per-party vote breakdown and dissenters for one roll-call vote |
+| `search_nars_reports` | National Assembly Research Service (국회입법조사처) publications by title, date or series |
+| `search_petitions` | Pending or all petitions (청원) of an assembly |
+| `get_schedule` | Assembly schedule: all, plenary only, or one committee |
+| `search_hearings` | Confirmation (인사청문회) and public (공청회) hearing meetings with minutes PDFs, by nominee or committee |
+| `discover_apis` | Searches the registry of verified Open API endpoints |
+| `query_assembly` | Calls any Open API endpoint directly, for data the tools above do not cover |
 
 ---
 
@@ -68,7 +76,7 @@ Claude will call `search_bills(assembly="22", bill_name="인공지능")` and ret
 
 Claude chains three calls:
 
-1. `search_bills(bill_name="반도체특별법")` → gets `BILL_ID`
+1. `search_bills(assembly="22", bill_name="반도체특별법")` → gets `BILL_ID`
 2. `get_bill_proposers(bill_id=...)` → gets proposer list
 3. `get_member_info` → resolves each proposer's party
 
@@ -104,8 +112,8 @@ Always include the assembly number (대수) in your query. The API covers the 16
 
 ::: {.callout-note}
 ## What MCP cannot do (yet)
-Committee transcripts (회의록) and citizen petitions (청원) are not available via the Open API.
-For transcripts, use [kr-hearings-data](https://github.com/kyusik-yang/kr-hearings-data) (15.1M speaker turns) or [likms.assembly.go.kr/record](https://likms.assembly.go.kr/record/).
+Full committee transcripts (회의록 전문) are not returned as text. `search_hearings` links the minutes of each hearing as a PDF, and `search_petitions` covers petitions.
+For transcripts as text, use [kr-hearings-data](https://github.com/kyusik-yang/kr-hearings-data) (15.1M speaker turns) or [likms.assembly.go.kr/record](https://likms.assembly.go.kr/record/).
 For bill propose-reason texts (제안이유), use [kna](https://github.com/kyusik-yang/kna) (109,756 law bills, 17th-22nd).
 :::
 

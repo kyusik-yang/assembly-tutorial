@@ -350,6 +350,38 @@ Claude → gives you a summary             ↓
 <td><code>get_bill_summary</code></td>
 <td>All-in-one convenience tool: detail + review + proposers + committee meetings</td>
 </tr>
+<tr class="odd">
+<td><code>analyze_legislator</code></td>
+<td>One-call member profile: member info, all sponsored bills and career statistics</td>
+</tr>
+<tr class="even">
+<td><code>get_party_cohesion</code></td>
+<td>Per-party vote breakdown and dissenters for one roll-call vote</td>
+</tr>
+<tr class="odd">
+<td><code>search_nars_reports</code></td>
+<td>National Assembly Research Service (국회입법조사처) publications by title, date or series</td>
+</tr>
+<tr class="even">
+<td><code>search_petitions</code></td>
+<td>Pending or all petitions (청원) of an assembly</td>
+</tr>
+<tr class="odd">
+<td><code>get_schedule</code></td>
+<td>Assembly schedule: all, plenary only, or one committee</td>
+</tr>
+<tr class="even">
+<td><code>search_hearings</code></td>
+<td>Confirmation (인사청문회) and public (공청회) hearing meetings with minutes PDFs, by nominee or committee</td>
+</tr>
+<tr class="odd">
+<td><code>discover_apis</code></td>
+<td>Searches the registry of verified Open API endpoints</td>
+</tr>
+<tr class="even">
+<td><code>query_assembly</code></td>
+<td>Calls any Open API endpoint directly, for data the tools above do not cover</td>
+</tr>
 </tbody>
 </table>
 <hr>
@@ -371,7 +403,7 @@ Claude → gives you a summary             ↓
 </blockquote>
 <p>Claude chains three calls:</p>
 <ol type="1">
-<li><code>search_bills(bill_name="반도체특별법")</code> → gets <code>BILL_ID</code></li>
+<li><code>search_bills(assembly="22", bill_name="반도체특별법")</code> → gets <code>BILL_ID</code></li>
 <li><code>get_bill_proposers(bill_id=...)</code> → gets proposer list</li>
 <li><code>get_member_info</code> → resolves each proposer’s party</li>
 </ol>
@@ -432,7 +464,7 @@ What MCP cannot do (yet)
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Committee transcripts (회의록) and citizen petitions (청원) are not available via the Open API. For transcripts, use <a href="https://github.com/kyusik-yang/kr-hearings-data">kr-hearings-data</a> (15.1M speaker turns) or <a href="https://likms.assembly.go.kr/record/">likms.assembly.go.kr/record</a>. For bill propose-reason texts (제안이유), use <a href="https://github.com/kyusik-yang/kna">kna</a> (109,756 law bills, 17th-22nd).</p>
+<p>Full committee transcripts (회의록 전문) are not returned as text. <code>search_hearings</code> links the minutes of each hearing as a PDF, and <code>search_petitions</code> covers petitions. For transcripts as text, use <a href="https://github.com/kyusik-yang/kr-hearings-data">kr-hearings-data</a> (15.1M speaker turns) or <a href="https://likms.assembly.go.kr/record/">likms.assembly.go.kr/record</a>. For bill propose-reason texts (제안이유), use <a href="https://github.com/kyusik-yang/kna">kna</a> (109,756 law bills, 17th-22nd).</p>
 </div>
 </div>
 <hr>
