@@ -106,7 +106,7 @@ Always include the assembly number (대수) in your query. The API covers the 16
 ## What MCP cannot do (yet)
 Committee transcripts (회의록) and citizen petitions (청원) are not available via the Open API.
 For transcripts, use [kr-hearings-data](https://github.com/kyusik-yang/kr-hearings-data) (15.1M speaker turns) or [likms.assembly.go.kr/record](https://likms.assembly.go.kr/record/).
-For bill propose-reason texts (제안이유), use [kna](https://github.com/kyusik-yang/kna) (60,925 bills, 20th-22nd).
+For bill propose-reason texts (제안이유), use [kna](https://github.com/kyusik-yang/kna) (109,756 law bills, 17th-22nd).
 :::
 
 ---

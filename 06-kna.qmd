@@ -1,28 +1,28 @@
 ---
 title: "The kna CLI: Master Database"
-subtitle: "Query 115K bills, 2.6M votes, and ideal points from your terminal"
+subtitle: "Query 115K bills, 4.1M votes, and ideal points from your terminal"
 ---
 
 ## Overview
 
-The `kna` (Korean National Assembly) CLI provides offline, instant access to a **pre-built master database** that integrates 17 Open Assembly API endpoints into a single queryable interface. Unlike the live API (Chapters 3-4), `kna` works on processed Parquet files - no API key needed, no rate limits, no network latency.
+The `kna` (Korean National Assembly) CLI provides offline, instant access to a **pre-built master database** that integrates 19 Open Assembly API endpoints into a single queryable interface. Unlike the live API (Chapters 3-4), `kna` works on processed Parquet files - no API key needed, no rate limits, no network latency.
 
 ::: {.callout-important}
-## This chapter uses kna 0.7.0
+## This chapter uses kna 0.8.1
 
-Chapters 6-9 use kna 0.7.0, whose data were collected from the Open Assembly API mostly on 2026-09-25. Release 0.7.0 corrects ten defects in the data shipped up to 0.6.0. Among them, the 17th-20th committee meeting tables stopped at five rows per bill, the roll-call votes of same-name legislators were dropped, party labels were the API's current party applied to past votes, and cosponsorship edges stopped at 100 names per bill. The default ideal points changed, and `dw_ideal_points_20_22.csv` is no longer shipped. Before reusing results computed with earlier files, read the 2026-09-26 entry of [CORRECTIONS.md](https://github.com/kyusik-yang/kna/blob/main/CORRECTIONS.md).
+Chapters 6-9 use kna 0.8.1, whose data were collected from the Open Assembly API mostly on 2026-09-25.
 :::
 
 | Feature | Live API (Ch 3-4) | **kna CLI** |
 |---|---|---|
 | Bills | 16-22nd (per query) | **17-22nd (115K pre-loaded, 67 columns in every assembly)** |
 | Lifecycle timestamps | Requires chaining 4+ endpoints | **Single row per bill, vetoes folded in** |
-| Roll call votes | Per-bill, rate-limited | **2.6M member-level votes (20-22nd), instant** |
+| Roll call votes | Per-bill, rate-limited | **4.1M member-level votes (17-22nd), instant** |
 | Member metadata | Per-query, current assembly only | **1,948 member-terms (17-22nd), with seniority at each assembly** |
 | Cosponsorship | Per-bill, paginated | **1.38M bill-member rows (17-22nd), roles 대표발의 / 공동발의 / 찬성** |
-| Asset disclosures | Not available | **2,928 member-year wealth rows** |
-| Ideal points | Not available | **940 legislator-terms (20-22nd), three series** |
-| Propose-reason texts | Not available | **60,925 bills (20-22nd)** |
+| Asset disclosures | Not available | **3,215 member-year wealth rows** |
+| Ideal points | Not available | **955 legislator-terms (20-22nd), three series** |
+| Propose-reason texts | Not available | **109,756 law bills (17-22nd)** |
 | Speed | ~2 req/sec | **Instant (local Parquet)** |
 
 ## Installation
@@ -33,7 +33,7 @@ Chapters 6-9 use kna 0.7.0, whose data were collected from the Open Assembly API
 pip install kna
 ```
 
-Or use `pipx install kna` which handles PATH automatically. This chapter needs version 0.7.0 or later, which `kna --version` reports.
+Or use `pipx install kna` which handles PATH automatically. This chapter needs version 0.8.1 or later, which `kna --version` reports.
 
 ### Step 2: Get the data
 
@@ -93,23 +93,23 @@ kna info
   Laws = 법률안. Enacted = 법률안 원안가결 + 수정가결 (final result).
   Promulg. = 법률안 with a promulgation date (became law).
 
-  Roll call votes    2,557,618  (20-22nd, member-level API votes)
-  16-19th votes         41,281  (experimental, fragmentary; separate file)
-  Ideal points             940  (20-22nd, bridged W-NOMINATE, v20260917)
+  Roll call votes    4,147,402  (17-22nd, member-level votes)
+  16th votes               923  (experimental, fragmentary, separate file)
+  Ideal points             955  (20-22nd, bridged W-NOMINATE, v20260917)
   Members                1,948  (17-22nd, party/district/committee)
-  Asset disclosures      2,928  (19-22nd, member-year wealth)
+  Asset disclosures      3,215  (19-22nd, member-year wealth)
   Committee mtgs       818,448  (17-22nd)
-  Bill texts            60,925  (20-22nd, propose-reason)
+  Bill texts           109,829  (17-22nd law bills, propose-reason)
   Cosponsor edges    1,379,763  (17-22nd, 대표/공동발의 + 찬성)
   Subcommittee          93,981  (17-22nd, 소위 referrals/reviews)
   Alt. absorption       25,439  (17-22nd, 대안 -> absorbed bills)
   Committee spells      13,616  (dated committee assignments)
-  Vote tallies           8,611  (20-22nd, plenary tallies)
+  Vote events           16,465  (17-22nd, tallies and minutes votes)
   Veto events               47  (17-22nd, 재의요구)
   Data freshness    2026-09-23
 ```
 
-The 16th-19th vote rows are parsed from plenary minutes. They are not a roll-call matrix, so kna keeps them in a separate experimental file and uses only the 20th-22nd API votes.
+The 17th-19th roll calls are the name lists printed in the plenary minutes. The 20th-22nd come from the API, and the 22nd votes of 16 members that the vote API omits come from LIKMS. The 16th vote rows are parsed from speech text. They are not a roll-call matrix, so kna keeps them in a separate experimental file.
 
 ### Search bills by title
 
@@ -150,7 +150,7 @@ kna text "기후변화" --assembly 22
 kna text "인공지능 규제" -n 10
 ```
 
-This covers 60,925 member law bills of the 20th-22nd Assembly, 60,546 of them with a propose-reason text (99.4%). The 22nd stops with the bills proposed by 2026-02-27.
+This covers the 110,245 law bills of the 17th-22nd Assembly, and 109,756 of them, or 99.6%, have a propose-reason text.
 
 ## Bill lifecycle timeline
 
@@ -226,8 +226,8 @@ kna legislator 이재명 --assembly 22
   district             인천 계양구을
   committee            외교통일위원회
   election             지역구 (재선 in the 22nd)
-  ideal point          -0.360 (22nd, bridged W-NOMINATE, v20260917)
-  rank                 153 / 305 in the 22nd (← 진보 ··· 보수 →)
+  ideal point          -0.359 (22nd, bridged W-NOMINATE, v20260917)
+  rank                 173 / 320 in the 22nd (← 진보 ··· 보수 →)
 
   BILL RECORD (lead proposer, including joint leads)
   led                  4 bills
@@ -251,7 +251,7 @@ Names are matched exactly, and some legislators share a name. The 22nd Assembly 
 ```bash
 kna legislator 박지원 --assembly 22
 #   2 legislators named 박지원 in the 22nd Assembly:
-#   8BF5855P  22nd  더불어민주당  전남광주통합특별시 해남군완도군진도군
+#   8BF5855P  22nd  더불어민주당  전남 해남군완도군진도군
 #   H7X3372O  22nd  더불어민주당  전북 군산시김제시부안군을
 
 # Pick one by MONA_CD (the name is still required)
@@ -262,7 +262,7 @@ kna legislator 추미애
 ```
 
 ::: {.callout-note}
-Ideal points are available for the 20th-22nd Assembly only (940 legislator-terms), because the API has member-level votes from the 20th on. For the 17th-19th, the bill record is shown without ideological positioning. The 22nd is in session, and 16 members seated during 2026 are missing from the vote API, so they have no 22nd ideal point yet.
+Ideal points are available for the 20th-22nd Assembly only (955 legislator-terms). The 17th-19th roll calls from the plenary minutes are not scaled, so for the 17th-19th the bill record is shown without ideological positioning. The 22nd is in session, and its values are provisional. 한동훈, seated in June 2026, has too few contested votes for a 22nd ideal point.
 :::
 
 ## Aggregate statistics
@@ -352,16 +352,16 @@ df = db.bills(assembly=22, columns=["bill_id", "bill_nm", "status", "ppsl_dt",
                                     "enacted", "promulgated", "vetoed"])
 
 # Ideal points: bridged W-NOMINATE by default, in the column ideal_point
-ip = db.ideal_points()  # 940 legislator-terms, positive = conservative
+ip = db.ideal_points()  # 955 legislator-terms, positive = conservative
 dw = db.ideal_points(series="dwnominate")  # or series="wnominate"
 
-# Roll call votes (20th-22nd): party = party at election, party_api = API label
-votes = db.roll_calls(assembly=22)  # 545,107 member-level votes
+# Roll call votes (17th-22nd): party = party at election, party_api = API label
+votes = db.roll_calls(assembly=22)  # 549,513 member-level votes
 tallies = db.vote_events(assembly=22)  # 1,847 plenary tallies
 vetoes = db.veto_events()  # 47 presidential vetoes (재의요구)
 
 # Bill texts
-texts = db.bill_texts()  # 60,925 propose-reason texts
+texts = db.bill_texts()  # 109,829 rows, 17th-22nd law bills
 
 # Member metadata (party at election, district, seniority at this assembly,
 # committees served in this assembly, sex, birth date)
@@ -372,20 +372,20 @@ spells = db.committee_assignments(assembly=22)  # 1,763 dated committee spells
 edges = db.cosponsorship_edges(assembly=22)  # 255,415 bill-member rows
 
 # Asset disclosures (net_worth, real estate, stocks, etc. in 천원)
-assets = db.assets(assembly=22)  # 299 member-year wealth rows
+assets = db.assets(assembly=22)  # 586 member-year wealth rows
 
 # Committee meetings (lowercase columns in every assembly)
 meetings = db.committee_meetings(22)  # 137,152 records
 ```
 
 ::: {.callout-warning}
-## Pitfalls with kna 0.7.0
+## Pitfalls with kna 0.8.1
 
 - There is no `kna.load()`. Load every table through `BillDB`, or read the files in `data/processed/` directly.
 - Join legislators on MONA_CD, never on the name. It is `mona_cd` in the member tables and `member_id` in the roll calls, ideal points and cosponsorship edges. Same-name pairs exist in most assemblies, for example 박지원 in the 22nd.
 - `reelection` is the lifetime count at the time of collection. For seniority at a given assembly (초선, 재선, ...), use `term_number` or `seniority`.
 - `party` is the party at election and keeps the satellite list parties, such as 더불어민주연합 and 국민의미래 in the 22nd. `party_current` gives the current party of serving 22nd members.
-- `ideal_point` has positive values for conservatives. Do not flip its sign, as code written for the old `aligned` column did.
+- `ideal_point` has positive values for conservatives. Do not flip its sign.
 :::
 
 ## Using kna data in R

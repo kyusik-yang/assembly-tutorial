@@ -351,25 +351,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>Roll-call scaling methods such as W-NOMINATE and DW-NOMINATE (Dynamic Weighted Nominal Three-Step Estimation) place legislators on an ideological scale using their roll-call voting records. Unlike party labels - which shift with frequent mergers and rebrandings in Korean politics - ideal points provide a <strong>continuous, member-level measure</strong>.</p>
-<p>The <code>kna</code> master database (release 0.7.0) includes <strong>940 ideal-point estimates</strong> for the 20th-22nd Assembly (2016-present), one per legislator-term, in three series. The default series is per-assembly W-NOMINATE, aligned across terms using the legislators who served in consecutive assemblies. A pooled DW-NOMINATE series is shipped alongside it.</p>
-<div class="callout-warning callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Changed in kna 0.7.0
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li><code>dw_ideal_points_20_22.csv</code> and its columns <code>aligned</code> and <code>coord1D</code> are gone. Despite its name, that file never held DW-NOMINATE output. Use <code>db.ideal_points()</code> or read <code>ideal_points_bridged.csv</code>.</li>
-<li><code>party</code> is the party at election, the party whose list or ticket the member was elected on. Earlier files carried the API’s current party, applied to every past vote.</li>
-<li><code>party_bloc</code> places 새누리당 and the satellite list parties 미래한국당 and 국민의미래 in the conservative bloc, and the satellite list parties 더불어시민당 and 더불어민주연합 in the liberal bloc.</li>
-<li>Every row carries a <code>vintage</code>. The default vintage is v20260917, estimated from the votes through 2026-09-17. The 0.6.0 files are kept in <code>data/processed/ideal_points_archive/v0.6.0_legacy/</code> for reproducing earlier results.</li>
-</ul>
-</div>
-</div>
+<p>The <code>kna</code> master database (release 0.8.1) includes <strong>955 ideal-point estimates</strong> for the 20th-22nd Assembly (2016-present), one per legislator-term, in three series. The default series is per-assembly W-NOMINATE, aligned across terms using the legislators who served in consecutive assemblies. A pooled DW-NOMINATE series is shipped alongside it.</p>
 <p><strong>What you will learn:</strong></p>
 <ol type="1">
 <li>The three ideal-point series in kna and which one to use</li>
@@ -387,7 +369,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Interactive explorer:</strong> See all 940 legislator-terms on an interactive scatterplot at <a href="https://kyusik-yang.github.io/kna/voteview.html">Uijeong Jido 의정지도</a>.</p>
+<p><strong>Interactive explorer:</strong> See all 955 legislator-terms on an interactive scatterplot at <a href="https://kyusik-yang.github.io/kna/voteview.html">Uijeong Jido 의정지도</a>.</p>
 </div>
 </div>
 </section>
@@ -417,7 +399,7 @@ Tip
 <tbody>
 <tr class="odd">
 <td>Legislator-terms</td>
-<td>940 (317 in the 20th, 318 in the 21st, 305 in the 22nd)</td>
+<td>955 (317 in the 20th, 318 in the 21st, 320 in the 22nd)</td>
 </tr>
 <tr class="even">
 <td>Assemblies</td>
@@ -425,15 +407,15 @@ Tip
 </tr>
 <tr class="odd">
 <td>Roll call votes</td>
-<td>2,557,618 member-level records on 8,610 recorded votes</td>
+<td>2,562,024 member-level records on 8,610 recorded votes</td>
 </tr>
 <tr class="even">
 <td>Contested votes scaled</td>
-<td>269 / 331 / 223 (at least 2.5% of those voting yea or nay in the minority)</td>
+<td>269 / 331 / 226 (at least 2.5% of those voting yea or nay in the minority)</td>
 </tr>
 <tr class="odd">
 <td>Bridging legislators</td>
-<td>218 in two or more terms (126 in both the 20th and 21st, 151 in both the 21st and 22nd, 68 in all three)</td>
+<td>221 in two or more terms (126 in both the 20th and 21st, 156 in both the 21st and 22nd, 70 in all three)</td>
 </tr>
 <tr class="even">
 <td>Estimation method</td>
@@ -449,7 +431,7 @@ Tip
 </tr>
 </tbody>
 </table>
-<p>A legislator is scaled with at least 20 contested yea or nay votes. 찬성 counts as yea and 반대 as nay, while 기권 and 불참 are treated as missing. The 22nd Assembly is in session, so its values are provisional. The 16 members seated during 2026 are missing from the vote API and have no 22nd ideal point.</p>
+<p>A legislator is scaled with at least 20 contested yea or nay votes. 찬성 counts as yea and 반대 as nay, while 기권 and 불참 are treated as missing. The 22nd Assembly is in session, so its values are provisional. The 22nd votes of the 16 members that the vote API omits come from LIKMS. One of them, 한동훈, has too few contested votes and no 22nd ideal point.</p>
 </section>
 <section id="three-series" class="level3">
 <h3 class="anchored" data-anchor-id="three-series">Three series</h3>
@@ -518,7 +500,7 @@ Tip
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># The other two series</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>wnom <span class="op">=</span> db.ideal_points(series<span class="op">=</span><span class="st">"wnominate"</span>)</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>dwnom <span class="op">=</span> db.ideal_points(series<span class="op">=</span><span class="st">"dwnominate"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>Legislator-terms: 940
+<pre><code>Legislator-terms: 955
 Columns: ['member_id', 'member_name', 'party', 'party_bloc', 'term', 'wnom_1d', 'ideal_point', 'vintage']</code></pre>
 <p>Key columns:</p>
 <table class="table">
@@ -592,8 +574,8 @@ Columns: ['member_id', 'member_name', 'party', 'party_bloc', 'term', 'wnom_1d', 
 <h3 class="anchored" data-anchor-id="via-kna-cli">Via kna CLI</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Quick lookup</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> legislator 이재명 <span class="at">--assembly</span> 22</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   ideal point          -0.360 (22nd, bridged W-NOMINATE, v20260917)</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   rank                 153 / 305 in the 22nd (← 진보 ··· 보수 →)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   ideal point          -0.359 (22nd, bridged W-NOMINATE, v20260917)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   rank                 173 / 320 in the 22nd (← 진보 ··· 보수 →)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>kna export</code> writes bills, not ideal points. To save the ideal points for Stata or Excel, write them from Python:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ip.to_csv(<span class="st">"idealpoints.csv"</span>, index<span class="op">=</span><span class="va">False</span>, encoding<span class="op">=</span><span class="st">"utf-8-sig"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
@@ -647,7 +629,7 @@ Columns: ['member_id', 'member_name', 'party', 'party_bloc', 'term', 'wnom_1d', 
 <p><span class="math display">\[\text{Polarization}_t = |\bar{x}_{liberal,t} - \bar{x}_{conservative,t}|\]</span></p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># party_bloc already groups the parties, including 새누리당 and the</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># satellite list parties. A hand-written party list can silently drop</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># members, because party is now the party at election.</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># members, because party is the party at election.</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>blocs <span class="op">=</span> ip[ip[<span class="st">"party_bloc"</span>].isin([<span class="st">"liberal"</span>, <span class="st">"conservative"</span>])]</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>polar <span class="op">=</span> (</span>
@@ -663,17 +645,17 @@ Columns: ['member_id', 'member_name', 'party', 'party_bloc', 'term', 'wnom_1d', 
 term
 20                 0.453   -0.364  0.818
 21                 0.456   -0.380  0.836
-22                 0.427   -0.382  0.809</code></pre>
-<p>In the bridged series the gap is 0.818 in the 20th, 0.836 in the 21st and 0.809 in the 22nd, 1.0% smaller in the 22nd than in the 20th. The three series do not give the same trend, so it is worth computing the gap in each:</p>
+22                 0.433   -0.385  0.818</code></pre>
+<p>In the bridged series the gap is 0.818 in the 20th, 0.836 in the 21st and 0.818 in the 22nd, 0.1% larger in the 22nd than in the 20th. The three series do not give the same trend, so it is worth computing the gap in each:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> series <span class="kw">in</span> [<span class="st">"bridged"</span>, <span class="st">"wnominate"</span>, <span class="st">"dwnominate"</span>]:</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> db.ideal_points(series<span class="op">=</span>series)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> d[d[<span class="st">"party_bloc"</span>].isin([<span class="st">"liberal"</span>, <span class="st">"conservative"</span>])]</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    means <span class="op">=</span> d.groupby([<span class="st">"term"</span>, <span class="st">"party_bloc"</span>])[<span class="st">"ideal_point"</span>].mean().unstack()</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    gap <span class="op">=</span> (means[<span class="st">"liberal"</span>] <span class="op">-</span> means[<span class="st">"conservative"</span>]).<span class="bu">abs</span>()</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>series<span class="sc">:&lt;11}</span><span class="ss">"</span>, gap.<span class="bu">round</span>(<span class="dv">3</span>).tolist(), <span class="ss">f"</span><span class="sc">{</span>gap[<span class="dv">22</span>] <span class="op">/</span> gap[<span class="dv">20</span>] <span class="op">-</span> <span class="dv">1</span><span class="sc">:+.1%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>bridged     [0.818, 0.836, 0.809] -1.0%
-wnominate   [0.818, 0.931, 1.145] +40.1%
-dwnominate  [0.781, 0.825, 0.846] +8.4%</code></pre>
+<pre><code>bridged     [0.818, 0.836, 0.818] +0.1%
+wnominate   [0.818, 0.931, 1.068] +30.6%
+dwnominate  [0.762, 0.809, 0.834] +9.5%</code></pre>
 <p>The per-assembly W-NOMINATE gaps are not comparable across assemblies, because each fit fixes its own unit from the configuration it recovers. What a per-assembly fit identifies is the ratio of the distance between the blocs to the dispersion within them. Bridging rescales distance and dispersion by the same factor and leaves that ratio unchanged. The kna codebook therefore recommends reporting within-party dispersion together with the distance, and treating the growth in the per-assembly series as an upper bound (CODEBOOK.md, section 10.4).</p>
 <section id="within-party-sorting" class="level3">
 <h3 class="anchored" data-anchor-id="within-party-sorting">Within-party sorting</h3>
@@ -691,9 +673,9 @@ term party_bloc
      liberal      -0.364  0.099    136
 21   conservative  0.456  0.153    115
      liberal      -0.380  0.091    183
-22   conservative  0.427  0.105    108
-     liberal      -0.382  0.056    179</code></pre>
-<p>Declining standard deviations indicate sorting - fewer moderates within each bloc. The ratio of the gap to the pooled within-bloc standard deviation is 5.18, 7.04 and 10.35 in the 20th, 21st and 22nd in the bridged series, and 7.14, 7.18 and 6.90 in the pooled DW-NOMINATE series.</p>
+22   conservative  0.433  0.110    113
+     liberal      -0.385  0.059    188</code></pre>
+<p>Declining standard deviations indicate sorting - fewer moderates within each bloc. The ratio of the gap to the pooled within-bloc standard deviation is 5.18, 7.04 and 10.01 in the 20th, 21st and 22nd in the bridged series, and 7.00, 7.11 and 6.80 in the pooled DW-NOMINATE series.</p>
 </section>
 </section>
 <section id="using-ideal-points-in-regression" class="level2">
@@ -741,7 +723,7 @@ term party_bloc
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pscl)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wnominate)</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load roll calls (20th-22nd, one row per term, bill_id and member_id)</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load roll calls (17th-22nd) and keep the 22nd, one row per bill_id and member_id</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>votes <span class="ot">&lt;-</span> <span class="fu">read_parquet</span>(<span class="st">"data/processed/roll_calls_all.parquet"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="dv">22</span>)</span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
@@ -775,7 +757,7 @@ term party_bloc
 </section>
 <section id="interactive-explorer" class="level2">
 <h2 class="anchored" data-anchor-id="interactive-explorer">Interactive explorer</h2>
-<p>Explore all 940 legislator-terms interactively:</p>
+<p>Explore all 955 legislator-terms interactively:</p>
 <ul>
 <li><a href="https://kyusik-yang.github.io/kna/voteview.html">Uijeong Jido 의정지도</a> - scatter plot with party colors, search, and polarization trend</li>
 </ul>

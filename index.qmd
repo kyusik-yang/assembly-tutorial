@@ -25,7 +25,7 @@ The tutorial covers four access modes:
 | **kna CLI** | Pre-built master database, instant offline queries | `pip install` only |
 
 ::: {.callout-tip}
-**New to Korean legislative data?** Start with [Chapter 6: kna CLI](06-kna.qmd) for instant access to 115K bills, 2.6M roll-call votes, and roll-call ideal points - no API key needed.
+**New to Korean legislative data?** Start with [Chapter 6: kna CLI](06-kna.qmd) for instant access to 115K bills, 4.1M roll-call votes, and roll-call ideal points - no API key needed.
 :::
 
 ---

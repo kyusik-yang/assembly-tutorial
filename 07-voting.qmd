@@ -98,7 +98,7 @@ db = BillDB()
 panel = db.roll_calls(assembly=22).rename(columns={
     "bill_id": "BILL_ID", "member_id": "MONA_CD", "member_name": "HG_NM",
     "vote": "RESULT_VOTE_MOD", "party_api": "POLY_NM",
-})  # 545,107 records, instant, with the API's column names used below
+})  # 549,513 records, instant, with the API's column names used below
 ```
 
 The API's `POLY_NM` is each member's party at the time of the query, written onto every past vote. kna keeps it as `party_api`, and its `party` column holds the party at election, the party whose list or ticket the member was elected on. To group by the party at election instead, rename `party` rather than `party_api` to `POLY_NM`. It keeps the satellite list parties 더불어민주연합 and 국민의미래 apart from 더불어민주당 and 국민의힘.

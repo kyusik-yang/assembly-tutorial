@@ -7,16 +7,7 @@ subtitle: "W-NOMINATE and DW-NOMINATE ideal points, polarization trends, and spa
 
 Roll-call scaling methods such as W-NOMINATE and DW-NOMINATE (Dynamic Weighted Nominal Three-Step Estimation) place legislators on an ideological scale using their roll-call voting records. Unlike party labels - which shift with frequent mergers and rebrandings in Korean politics - ideal points provide a **continuous, member-level measure**.
 
-The `kna` master database (release 0.7.0) includes **940 ideal-point estimates** for the 20th-22nd Assembly (2016-present), one per legislator-term, in three series. The default series is per-assembly W-NOMINATE, aligned across terms using the legislators who served in consecutive assemblies. A pooled DW-NOMINATE series is shipped alongside it.
-
-::: {.callout-warning}
-## Changed in kna 0.7.0
-
-- `dw_ideal_points_20_22.csv` and its columns `aligned` and `coord1D` are gone. Despite its name, that file never held DW-NOMINATE output. Use `db.ideal_points()` or read `ideal_points_bridged.csv`.
-- `party` is the party at election, the party whose list or ticket the member was elected on. Earlier files carried the API's current party, applied to every past vote.
-- `party_bloc` places 새누리당 and the satellite list parties 미래한국당 and 국민의미래 in the conservative bloc, and the satellite list parties 더불어시민당 and 더불어민주연합 in the liberal bloc.
-- Every row carries a `vintage`. The default vintage is v20260917, estimated from the votes through 2026-09-17. The 0.6.0 files are kept in `data/processed/ideal_points_archive/v0.6.0_legacy/` for reproducing earlier results.
-:::
+The `kna` master database (release 0.8.1) includes **955 ideal-point estimates** for the 20th-22nd Assembly (2016-present), one per legislator-term, in three series. The default series is per-assembly W-NOMINATE, aligned across terms using the legislators who served in consecutive assemblies. A pooled DW-NOMINATE series is shipped alongside it.
 
 **What you will learn:**
 
@@ -26,7 +17,7 @@ The `kna` master database (release 0.7.0) includes **940 ideal-point estimates**
 4. Using ideal points as independent/dependent variables in regression
 
 ::: {.callout-tip}
-**Interactive explorer:** See all 940 legislator-terms on an interactive scatterplot at [Uijeong Jido 의정지도](https://kyusik-yang.github.io/kna/voteview.html).
+**Interactive explorer:** See all 955 legislator-terms on an interactive scatterplot at [Uijeong Jido 의정지도](https://kyusik-yang.github.io/kna/voteview.html).
 :::
 
 ## Why roll-call ideal points for Korea?
@@ -45,16 +36,16 @@ Roll-call-based ideal points solve all three. A W-NOMINATE fit of one assembly p
 
 | Metric | Value |
 |---|---|
-| Legislator-terms | 940 (317 in the 20th, 318 in the 21st, 305 in the 22nd) |
+| Legislator-terms | 955 (317 in the 20th, 318 in the 21st, 320 in the 22nd) |
 | Assemblies | 20th (2016-20), 21st (2020-24), 22nd (2024-) |
-| Roll call votes | 2,557,618 member-level records on 8,610 recorded votes |
-| Contested votes scaled | 269 / 331 / 223 (at least 2.5% of those voting yea or nay in the minority) |
-| Bridging legislators | 218 in two or more terms (126 in both the 20th and 21st, 151 in both the 21st and 22nd, 68 in all three) |
+| Roll call votes | 2,562,024 member-level records on 8,610 recorded votes |
+| Contested votes scaled | 269 / 331 / 226 (at least 2.5% of those voting yea or nay in the minority) |
+| Bridging legislators | 221 in two or more terms (126 in both the 20th and 21st, 156 in both the 21st and 22nd, 70 in all three) |
 | Estimation method | W-NOMINATE per assembly via R `wnominate`, chained bridging, and pooled DW-NOMINATE via R `dwnominate` |
 | Sign | Positive = conservative (보수), negative = liberal (진보), anchored on 추경호 (G152611B) |
 | Vintage | v20260917, votes through 2026-09-17 |
 
-A legislator is scaled with at least 20 contested yea or nay votes. 찬성 counts as yea and 반대 as nay, while 기권 and 불참 are treated as missing. The 22nd Assembly is in session, so its values are provisional. The 16 members seated during 2026 are missing from the vote API and have no 22nd ideal point.
+A legislator is scaled with at least 20 contested yea or nay votes. 찬성 counts as yea and 반대 as nay, while 기권 and 불참 are treated as missing. The 22nd Assembly is in session, so its values are provisional. The 22nd votes of the 16 members that the vote API omits come from LIKMS. One of them, 한동훈, has too few contested votes and no 22nd ideal point.
 
 ### Three series
 
@@ -86,7 +77,7 @@ dwnom = db.ideal_points(series="dwnominate")
 ```
 
 ```
-Legislator-terms: 940
+Legislator-terms: 955
 Columns: ['member_id', 'member_name', 'party', 'party_bloc', 'term', 'wnom_1d', 'ideal_point', 'vintage']
 ```
 
@@ -130,8 +121,8 @@ ip %>%
 ```bash
 # Quick lookup
 kna legislator 이재명 --assembly 22
-#   ideal point          -0.360 (22nd, bridged W-NOMINATE, v20260917)
-#   rank                 153 / 305 in the 22nd (← 진보 ··· 보수 →)
+#   ideal point          -0.359 (22nd, bridged W-NOMINATE, v20260917)
+#   rank                 173 / 320 in the 22nd (← 진보 ··· 보수 →)
 ```
 
 `kna export` writes bills, not ideal points. To save the ideal points for Stata or Excel, write them from Python:
@@ -196,7 +187,7 @@ $$\text{Polarization}_t = |\bar{x}_{liberal,t} - \bar{x}_{conservative,t}|$$
 ```python
 # party_bloc already groups the parties, including 새누리당 and the
 # satellite list parties. A hand-written party list can silently drop
-# members, because party is now the party at election.
+# members, because party is the party at election.
 blocs = ip[ip["party_bloc"].isin(["liberal", "conservative"])]
 
 polar = (
@@ -216,10 +207,10 @@ party_bloc  conservative  liberal    gap
 term
 20                 0.453   -0.364  0.818
 21                 0.456   -0.380  0.836
-22                 0.427   -0.382  0.809
+22                 0.433   -0.385  0.818
 ```
 
-In the bridged series the gap is 0.818 in the 20th, 0.836 in the 21st and 0.809 in the 22nd, 1.0% smaller in the 22nd than in the 20th. The three series do not give the same trend, so it is worth computing the gap in each:
+In the bridged series the gap is 0.818 in the 20th, 0.836 in the 21st and 0.818 in the 22nd, 0.1% larger in the 22nd than in the 20th. The three series do not give the same trend, so it is worth computing the gap in each:
 
 ```python
 for series in ["bridged", "wnominate", "dwnominate"]:
@@ -231,9 +222,9 @@ for series in ["bridged", "wnominate", "dwnominate"]:
 ```
 
 ```
-bridged     [0.818, 0.836, 0.809] -1.0%
-wnominate   [0.818, 0.931, 1.145] +40.1%
-dwnominate  [0.781, 0.825, 0.846] +8.4%
+bridged     [0.818, 0.836, 0.818] +0.1%
+wnominate   [0.818, 0.931, 1.068] +30.6%
+dwnominate  [0.762, 0.809, 0.834] +9.5%
 ```
 
 The per-assembly W-NOMINATE gaps are not comparable across assemblies, because each fit fixes its own unit from the configuration it recovers. What a per-assembly fit identifies is the ratio of the distance between the blocs to the dispersion within them. Bridging rescales distance and dispersion by the same factor and leaves that ratio unchanged. The kna codebook therefore recommends reporting within-party dispersion together with the distance, and treating the growth in the per-assembly series as an upper bound (CODEBOOK.md, section 10.4).
@@ -259,11 +250,11 @@ term party_bloc
      liberal      -0.364  0.099    136
 21   conservative  0.456  0.153    115
      liberal      -0.380  0.091    183
-22   conservative  0.427  0.105    108
-     liberal      -0.382  0.056    179
+22   conservative  0.433  0.110    113
+     liberal      -0.385  0.059    188
 ```
 
-Declining standard deviations indicate sorting - fewer moderates within each bloc. The ratio of the gap to the pooled within-bloc standard deviation is 5.18, 7.04 and 10.35 in the 20th, 21st and 22nd in the bridged series, and 7.14, 7.18 and 6.90 in the pooled DW-NOMINATE series.
+Declining standard deviations indicate sorting - fewer moderates within each bloc. The ratio of the gap to the pooled within-bloc standard deviation is 5.18, 7.04 and 10.01 in the 20th, 21st and 22nd in the bridged series, and 7.00, 7.11 and 6.80 in the pooled DW-NOMINATE series.
 
 ## Using ideal points in regression
 
@@ -318,7 +309,7 @@ library(tidyr)
 library(pscl)
 library(wnominate)
 
-# Load roll calls (20th-22nd, one row per term, bill_id and member_id)
+# Load roll calls (17th-22nd) and keep the 22nd, one row per bill_id and member_id
 votes <- read_parquet("data/processed/roll_calls_all.parquet") %>%
   filter(term == 22)
 
@@ -350,6 +341,6 @@ result <- wnominate(rc, dims = 2, minvotes = 20, lop = 0.025,
 
 ## Interactive explorer
 
-Explore all 940 legislator-terms interactively:
+Explore all 955 legislator-terms interactively:
 
 - [Uijeong Jido 의정지도](https://kyusik-yang.github.io/kna/voteview.html) - scatter plot with party colors, search, and polarization trend

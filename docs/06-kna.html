@@ -329,7 +329,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title d-none d-lg-block">The kna CLI: Master Database</h1>
-<p class="subtitle lead">Query 115K bills, 2.6M votes, and ideal points from your terminal</p>
+<p class="subtitle lead">Query 115K bills, 4.1M votes, and ideal points from your terminal</p>
 </div>
 
 
@@ -345,18 +345,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>The <code>kna</code> (Korean National Assembly) CLI provides offline, instant access to a <strong>pre-built master database</strong> that integrates 17 Open Assembly API endpoints into a single queryable interface. Unlike the live API (Chapters 3-4), <code>kna</code> works on processed Parquet files - no API key needed, no rate limits, no network latency.</p>
+<p>The <code>kna</code> (Korean National Assembly) CLI provides offline, instant access to a <strong>pre-built master database</strong> that integrates 19 Open Assembly API endpoints into a single queryable interface. Unlike the live API (Chapters 3-4), <code>kna</code> works on processed Parquet files - no API key needed, no rate limits, no network latency.</p>
 <div class="callout-important callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-This chapter uses kna 0.7.0
+This chapter uses kna 0.8.1
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Chapters 6-9 use kna 0.7.0, whose data were collected from the Open Assembly API mostly on 2026-09-25. Release 0.7.0 corrects ten defects in the data shipped up to 0.6.0. Among them, the 17th-20th committee meeting tables stopped at five rows per bill, the roll-call votes of same-name legislators were dropped, party labels were the API’s current party applied to past votes, and cosponsorship edges stopped at 100 names per bill. The default ideal points changed, and <code>dw_ideal_points_20_22.csv</code> is no longer shipped. Before reusing results computed with earlier files, read the 2026-09-26 entry of <a href="https://github.com/kyusik-yang/kna/blob/main/CORRECTIONS.md">CORRECTIONS.md</a>.</p>
+<p>Chapters 6-9 use kna 0.8.1, whose data were collected from the Open Assembly API mostly on 2026-09-25.</p>
 </div>
 </div>
 <table class="table">
@@ -386,7 +386,7 @@ This chapter uses kna 0.7.0
 <tr class="odd">
 <td>Roll call votes</td>
 <td>Per-bill, rate-limited</td>
-<td><strong>2.6M member-level votes (20-22nd), instant</strong></td>
+<td><strong>4.1M member-level votes (17-22nd), instant</strong></td>
 </tr>
 <tr class="even">
 <td>Member metadata</td>
@@ -401,17 +401,17 @@ This chapter uses kna 0.7.0
 <tr class="even">
 <td>Asset disclosures</td>
 <td>Not available</td>
-<td><strong>2,928 member-year wealth rows</strong></td>
+<td><strong>3,215 member-year wealth rows</strong></td>
 </tr>
 <tr class="odd">
 <td>Ideal points</td>
 <td>Not available</td>
-<td><strong>940 legislator-terms (20-22nd), three series</strong></td>
+<td><strong>955 legislator-terms (20-22nd), three series</strong></td>
 </tr>
 <tr class="even">
 <td>Propose-reason texts</td>
 <td>Not available</td>
-<td><strong>60,925 bills (20-22nd)</strong></td>
+<td><strong>109,756 law bills (17-22nd)</strong></td>
 </tr>
 <tr class="odd">
 <td>Speed</td>
@@ -426,7 +426,7 @@ This chapter uses kna 0.7.0
 <section id="step-1-install-the-cli" class="level3">
 <h3 class="anchored" data-anchor-id="step-1-install-the-cli">Step 1: Install the CLI</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install kna</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Or use <code>pipx install kna</code> which handles PATH automatically. This chapter needs version 0.7.0 or later, which <code>kna --version</code> reports.</p>
+<p>Or use <code>pipx install kna</code> which handles PATH automatically. This chapter needs version 0.8.1 or later, which <code>kna --version</code> reports.</p>
 </section>
 <section id="step-2-get-the-data" class="level3">
 <h3 class="anchored" data-anchor-id="step-2-get-the-data">Step 2: Get the data</h3>
@@ -487,21 +487,21 @@ Warning
   Laws = 법률안. Enacted = 법률안 원안가결 + 수정가결 (final result).
   Promulg. = 법률안 with a promulgation date (became law).
 
-  Roll call votes    2,557,618  (20-22nd, member-level API votes)
-  16-19th votes         41,281  (experimental, fragmentary; separate file)
-  Ideal points             940  (20-22nd, bridged W-NOMINATE, v20260917)
+  Roll call votes    4,147,402  (17-22nd, member-level votes)
+  16th votes               923  (experimental, fragmentary, separate file)
+  Ideal points             955  (20-22nd, bridged W-NOMINATE, v20260917)
   Members                1,948  (17-22nd, party/district/committee)
-  Asset disclosures      2,928  (19-22nd, member-year wealth)
+  Asset disclosures      3,215  (19-22nd, member-year wealth)
   Committee mtgs       818,448  (17-22nd)
-  Bill texts            60,925  (20-22nd, propose-reason)
+  Bill texts           109,829  (17-22nd law bills, propose-reason)
   Cosponsor edges    1,379,763  (17-22nd, 대표/공동발의 + 찬성)
   Subcommittee          93,981  (17-22nd, 소위 referrals/reviews)
   Alt. absorption       25,439  (17-22nd, 대안 -&gt; absorbed bills)
   Committee spells      13,616  (dated committee assignments)
-  Vote tallies           8,611  (20-22nd, plenary tallies)
+  Vote events           16,465  (17-22nd, tallies and minutes votes)
   Veto events               47  (17-22nd, 재의요구)
   Data freshness    2026-09-23</code></pre>
-<p>The 16th-19th vote rows are parsed from plenary minutes. They are not a roll-call matrix, so kna keeps them in a separate experimental file and uses only the 20th-22nd API votes.</p>
+<p>The 17th-19th roll calls are the name lists printed in the plenary minutes. The 20th-22nd come from the API, and the 22nd votes of 16 members that the vote API omits come from LIKMS. The 16th vote rows are parsed from speech text. They are not a roll-call matrix, so kna keeps them in a separate experimental file.</p>
 </section>
 <section id="search-bills-by-title" class="level3">
 <h3 class="anchored" data-anchor-id="search-bills-by-title">Search bills by title</h3>
@@ -575,7 +575,7 @@ Warning
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find bills discussing AI regulation rationale</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> text <span class="st">"인공지능 규제"</span> <span class="at">-n</span> 10</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This covers 60,925 member law bills of the 20th-22nd Assembly, 60,546 of them with a propose-reason text (99.4%). The 22nd stops with the bills proposed by 2026-02-27.</p>
+<p>This covers the 110,245 law bills of the 17th-22nd Assembly, and 109,756 of them, or 99.6%, have a propose-reason text.</p>
 </section>
 </section>
 <section id="bill-lifecycle-timeline" class="level2">
@@ -634,8 +634,8 @@ Warning
   district             인천 계양구을
   committee            외교통일위원회
   election             지역구 (재선 in the 22nd)
-  ideal point          -0.360 (22nd, bridged W-NOMINATE, v20260917)
-  rank                 153 / 305 in the 22nd (← 진보 ··· 보수 →)
+  ideal point          -0.359 (22nd, bridged W-NOMINATE, v20260917)
+  rank                 173 / 320 in the 22nd (← 진보 ··· 보수 →)
 
   BILL RECORD (lead proposer, including joint leads)
   led                  4 bills
@@ -655,7 +655,7 @@ Warning
 <p>Names are matched exactly, and some legislators share a name. The 22nd Assembly has two members named 박지원, so the CLI lists both MONA_CDs and asks for one:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kna</span> legislator 박지원 <span class="at">--assembly</span> 22</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   2 legislators named 박지원 in the 22nd Assembly:</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   8BF5855P  22nd  더불어민주당  전남광주통합특별시 해남군완도군진도군</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   8BF5855P  22nd  더불어민주당  전남 해남군완도군진도군</span></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   H7X3372O  22nd  더불어민주당  전북 군산시김제시부안군을</span></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Pick one by MONA_CD (the name is still required)</span></span>
@@ -673,7 +673,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ideal points are available for the 20th-22nd Assembly only (940 legislator-terms), because the API has member-level votes from the 20th on. For the 17th-19th, the bill record is shown without ideological positioning. The 22nd is in session, and 16 members seated during 2026 are missing from the vote API, so they have no 22nd ideal point yet.</p>
+<p>Ideal points are available for the 20th-22nd Assembly only (955 legislator-terms). The 17th-19th roll calls from the plenary minutes are not scaled, so for the 17th-19th the bill record is shown without ideological positioning. The 22nd is in session, and its values are provisional. 한동훈, seated in June 2026, has too few contested votes for a 22nd ideal point.</p>
 </div>
 </div>
 </section>
@@ -746,16 +746,16 @@ Note
 <span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>                                    <span class="st">"enacted"</span>, <span class="st">"promulgated"</span>, <span class="st">"vetoed"</span>])</span>
 <span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Ideal points: bridged W-NOMINATE by default, in the column ideal_point</span></span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>ip <span class="op">=</span> db.ideal_points()  <span class="co"># 940 legislator-terms, positive = conservative</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>ip <span class="op">=</span> db.ideal_points()  <span class="co"># 955 legislator-terms, positive = conservative</span></span>
 <span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>dw <span class="op">=</span> db.ideal_points(series<span class="op">=</span><span class="st">"dwnominate"</span>)  <span class="co"># or series="wnominate"</span></span>
 <span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Roll call votes (20th-22nd): party = party at election, party_api = API label</span></span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>votes <span class="op">=</span> db.roll_calls(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 545,107 member-level votes</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Roll call votes (17th-22nd): party = party at election, party_api = API label</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>votes <span class="op">=</span> db.roll_calls(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 549,513 member-level votes</span></span>
 <span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>tallies <span class="op">=</span> db.vote_events(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 1,847 plenary tallies</span></span>
 <span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>vetoes <span class="op">=</span> db.veto_events()  <span class="co"># 47 presidential vetoes (재의요구)</span></span>
 <span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Bill texts</span></span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>texts <span class="op">=</span> db.bill_texts()  <span class="co"># 60,925 propose-reason texts</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>texts <span class="op">=</span> db.bill_texts()  <span class="co"># 109,829 rows, 17th-22nd law bills</span></span>
 <span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Member metadata (party at election, district, seniority at this assembly,</span></span>
 <span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a><span class="co"># committees served in this assembly, sex, birth date)</span></span>
@@ -766,7 +766,7 @@ Note
 <span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> db.cosponsorship_edges(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 255,415 bill-member rows</span></span>
 <span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Asset disclosures (net_worth, real estate, stocks, etc. in 천원)</span></span>
-<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>assets <span class="op">=</span> db.assets(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 299 member-year wealth rows</span></span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>assets <span class="op">=</span> db.assets(assembly<span class="op">=</span><span class="dv">22</span>)  <span class="co"># 586 member-year wealth rows</span></span>
 <span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Committee meetings (lowercase columns in every assembly)</span></span>
 <span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>meetings <span class="op">=</span> db.committee_meetings(<span class="dv">22</span>)  <span class="co"># 137,152 records</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -776,7 +776,7 @@ Note
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Pitfalls with kna 0.7.0
+Pitfalls with kna 0.8.1
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -785,7 +785,7 @@ Pitfalls with kna 0.7.0
 <li>Join legislators on MONA_CD, never on the name. It is <code>mona_cd</code> in the member tables and <code>member_id</code> in the roll calls, ideal points and cosponsorship edges. Same-name pairs exist in most assemblies, for example 박지원 in the 22nd.</li>
 <li><code>reelection</code> is the lifetime count at the time of collection. For seniority at a given assembly (초선, 재선, …), use <code>term_number</code> or <code>seniority</code>.</li>
 <li><code>party</code> is the party at election and keeps the satellite list parties, such as 더불어민주연합 and 국민의미래 in the 22nd. <code>party_current</code> gives the current party of serving 22nd members.</li>
-<li><code>ideal_point</code> has positive values for conservatives. Do not flip its sign, as code written for the old <code>aligned</code> column did.</li>
+<li><code>ideal_point</code> has positive values for conservatives. Do not flip its sign.</li>
 </ul>
 </div>
 </div>
